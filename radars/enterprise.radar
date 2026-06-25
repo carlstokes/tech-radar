@@ -21,7 +21,7 @@
     { "quadrant": 0, "ring": 1, "label": "Revenue Optimisation", "reason": "Recommended capability for improving commercial decision-making.", "moved": 0 },
     { "quadrant": 0, "ring": 1, "label": "Personalisation", "reason": "Improves relevance of digital experiences and offers.", "moved": 1 },
     { "quadrant": 0, "ring": 2, "label": "Conversational Commerce", "reason": "Explore customer journeys supported by conversational interfaces.", "moved": 1 },
-    { "quadrant": 0, "ring": 3, "label": "Manual Customer Segmentation", "reason": "Retire manual and disconnected approaches to segmentation.", ""moved": -1 },
+    { "quadrant": 0, "ring": 3, "label": "Manual Customer Segmentation", "reason": "Retire manual and disconnected approaches to segmentation.", "moved": -1 },
 
     { "quadrant": 1, "ring": 0, "label": "Enterprise Data Platform", "reason": "Strategic platform for governed reporting, analytics and insight.", "moved": 0 },
     { "quadrant": 1, "ring": 0, "label": "Business Intelligence", "reason": "Core enterprise reporting and decision-support capability.", "moved": 0 },
@@ -29,7 +29,7 @@
     { "quadrant": 1, "ring": 1, "label": "Master Data Management", "reason": "Supports trusted reference data across the enterprise.", "moved": 0 },
     { "quadrant": 1, "ring": 2, "label": "Generative AI", "reason": "Explore practical use cases with clear governance and risk controls.", "moved": 1 },
     { "quadrant": 1, "ring": 2, "label": "Knowledge Graphs", "reason": "Explore richer data relationships for intelligence and discovery.", "moved": 0 },
-    { "quadrant": 1, "ring": 3, "label": "Spreadsheet Reporting", "reason": "Move away from unmanaged reporting where governed platforms exist.", ""moved": -1 },
+    { "quadrant": 1, "ring": 3, "label": "Spreadsheet Reporting", "reason": "Move away from unmanaged reporting where governed platforms exist.", "moved": -1 },
 
     { "quadrant": 2, "ring": 0, "label": "Microsoft 365", "reason": "Strategic collaboration and productivity platform.", "moved": 0 },
     { "quadrant": 2, "ring": 0, "label": "Dynamics 365", "reason": "Strategic enterprise platform where it fits business capability needs.", "moved": 0 },
@@ -37,7 +37,7 @@
     { "quadrant": 2, "ring": 1, "label": "API Platform", "reason": "Recommended integration surface for shared capabilities.", "moved": 0 },
     { "quadrant": 2, "ring": 2, "label": "Internal Developer Platform", "reason": "Explore to improve delivery speed, consistency and developer experience.", "moved": 1 },
     { "quadrant": 2, "ring": 2, "label": "Enterprise AI Platform", "reason": "Evaluate shared foundations for safe AI adoption.", "moved": 1 },
-    { "quadrant": 2, "ring": 3, "label": "Legacy Intranet Platforms", "reason": "Retire where modern collaboration platforms meet the need.", ""moved": -1 },
+    { "quadrant": 2, "ring": 3, "label": "Legacy Intranet Platforms", "reason": "Retire where modern collaboration platforms meet the need.", "moved": -1 },
 
     { "quadrant": 3, "ring": 0, "label": "Product Operating Model", "reason": "Strategic operating model for persistent ownership and outcome delivery.", "moved": 1 },
     { "quadrant": 3, "ring": 1, "label": "Team Topologies", "reason": "Recommended approach for organising teams around flow and cognitive load.", "moved": 1 },
@@ -45,7 +45,7 @@
     { "quadrant": 3, "ring": 1, "label": "Architecture Decision Records", "reason": "Recommended for clear and lightweight decision governance.", "moved": 0 },
     { "quadrant": 3, "ring": 2, "label": "Platform Engineering", "reason": "Evaluate as a way to improve delivery consistency and engineering enablement.", "moved": 1 },
     { "quadrant": 3, "ring": 2, "label": "AI-assisted Ways of Working", "reason": "Explore how AI changes productivity, controls and operating practices.", "moved": 1 },
-    { "quadrant": 3, "ring": 3, "label": "Project-Based Funding", "reason": "Move towards persistent product investment where appropriate.", ""moved": -1 },
-    { "quadrant": 3, "ring": 3, "label": "Annual Release Cycles", "reason": "Retire where teams can move safely through smaller, more frequent changes.", ""moved": -1 }
+    { "quadrant": 3, "ring": 3, "label": "Project-Based Funding", "reason": "Move towards persistent product investment where appropriate.", "moved": -1 },
+    { "quadrant": 3, "ring": 3, "label": "Annual Release Cycles", "reason": "Retire where teams can move safely through smaller, more frequent changes.", "moved": -1 }
   ]
 }
