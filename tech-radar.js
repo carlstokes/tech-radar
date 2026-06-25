@@ -25,6 +25,7 @@ const DEFAULT_DISPLAY_OPTIONS = {
 
 class TechRadar {
   constructor(config, options = {}) {
+    this.searchHighlightActive = false;
     this.config = config;
     this.elements = { ...DEFAULT_ELEMENTS, ...(options.elements || {}) };
     this.display = { ...DEFAULT_DISPLAY_OPTIONS, ...(options.display || {}) };
@@ -76,6 +77,7 @@ class TechRadar {
     this.configureZoom();
     this.drawGrid();
     this.buildLegend();
+    this.buildSearchOptions();
     this.buildGuidance();
     this.drawBlips();
     this.buildQuadrantControls();
@@ -377,6 +379,8 @@ class TechRadar {
       .attr("transform", d => `translate(${d.x}, ${d.y})`)
       .on("pointerdown", event => event.preventDefault())
       .on("mousemove", (event, d) => {
+        if (this.searchHighlightActive) return;
+
         this.tooltip
           .style("left", `${event.clientX + 12}px`)
           .style("top", `${event.clientY + 12}px`)
@@ -386,13 +390,19 @@ class TechRadar {
         this.setLinkedHighlight(d, true, { scrollLegend: true });
       })
       .on("mouseleave", (event, d) => {
+        if (this.searchHighlightActive) return;
+
         this.tooltip.style("opacity", 0);
         this.setLinkedHighlight(d, false);
       })
       .on("focus", (event, d) => {
+        if (this.searchHighlightActive) return;
+
         this.setLinkedHighlight(d, true, { scrollLegend: true });
       })
       .on("blur", (event, d) => {
+        if (this.searchHighlightActive) return;
+
         this.setLinkedHighlight(d, false);
       });
 
@@ -467,11 +477,26 @@ class TechRadar {
             .attr("class", "legend-item")
             .attr("id", `legend-item-${item.id}`)
             .attr("tabindex", 0)
-            .on("pointerdown", event => event.preventDefault())
-            .on("mouseenter", () => this.setLinkedHighlight(item, true))
-            .on("mouseleave", () => this.setLinkedHighlight(item, false))
-            .on("focus", () => this.setLinkedHighlight(item, true))
-            .on("blur", () => this.setLinkedHighlight(item, false));
+            .on("mouseenter", () => {
+              if (!this.searchHighlightActive) {
+                this.setLinkedHighlight(item, true);
+              }
+            })
+            .on("mouseleave", () => {
+              if (!this.searchHighlightActive) {
+                this.setLinkedHighlight(item, false);
+              }
+            })
+            .on("focus", () => {
+              if (!this.searchHighlightActive) {
+                this.setLinkedHighlight(item, true);
+              }
+            })
+            .on("blur", () => {
+              if (!this.searchHighlightActive) {
+                this.setLinkedHighlight(item, false);
+              }
+            });
 
           row.append("span")
             .attr("class", "num")
@@ -601,6 +626,28 @@ class TechRadar {
     this.scrollLegendToQuadrant(index);
   }
 
+  clearSelection() {
+    this.searchHighlightActive = false;
+
+    this.root.selectAll(".blip")
+      .classed("highlight", false)
+      .classed("dimmed", false);
+
+    d3.selectAll(".legend-item")
+      .classed("highlight", false)
+      .classed("dimmed", false);
+  }
+
+  clearSearch() {
+    const search = this.element("searchId");
+
+    if (search) {
+      search.value = "";
+    }
+
+    this.clearSelection();
+  }
+
   resetZoom() {
     this.svg.transition()
       .duration(500)
@@ -610,6 +657,8 @@ class TechRadar {
       top: 0,
       behavior: "smooth"
     });
+
+    this.clearSearch();
   }
 
   bindControls() {
@@ -627,6 +676,10 @@ class TechRadar {
       const nextTheme = document.body.dataset.theme === "dark" ? "light" : "dark";
       this.applyTheme(nextTheme, true);
       this.refreshThemeColours();
+    });
+
+    this.element("searchId")?.addEventListener("change", event => {
+      this.goToEntry(event.target.value);
     });
   }
 
@@ -653,6 +706,53 @@ class TechRadar {
       d3.select(nodes[index]).select("circle").attr("fill", colour);
       d3.select(nodes[index]).select("path").attr("fill", colour);
     });
+  }
+
+  buildSearchOptions() {
+    const list = this.element("searchOptionsId");
+
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    this.entries
+      .toSorted((a, b) => a.label.localeCompare(b.label))
+      .forEach(entry => {
+        const option = document.createElement("option");
+        option.value = entry.label;
+        list.appendChild(option);
+      });
+  }
+
+  scrollLegendToEntry(entry) {
+    const legendElement = this.element("legendId");
+    const legendItem = document.getElementById(`legend-item-${entry.id}`);
+
+    if (!legendElement || !legendItem) return;
+
+    legendElement.scrollTo({
+      top: legendItem.offsetTop - legendElement.offsetTop - 12,
+      behavior: "smooth"
+    });
+  }
+
+  goToEntry(label) {
+    const entry = this.entries.find(
+      item => item.label.toLowerCase() === label.trim().toLowerCase()
+    );
+
+    if (!entry) return;
+
+    this.searchHighlightActive = true;
+    this.tooltip.style("opacity", 0);
+
+    this.zoomToQuadrant(entry.quadrant);
+    this.scrollLegendToEntry(entry);
+    this.setLinkedHighlight(entry, true);
+
+    setTimeout(() => {
+      this.clearSearch();
+    }, 2000);
   }
 }
 

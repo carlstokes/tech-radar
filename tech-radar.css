@@ -360,3 +360,13 @@ body[data-show-sidebar="false"] #radar-layout {
   padding: 8px 10px;
   font: inherit;
 }
+
+#radar-search {
+  width: 220px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font: inherit;
+}

@@ -24,7 +24,7 @@
     { "quadrant": 0, "ring": 2, "label": "AI-assisted Development", "reason": "Promising productivity aid, but usage patterns still need to mature.", "active": true, "moved": 1 },
     { "quadrant": 0, "ring": 3, "label": "Manual Deployment Processes", "reason": "New services should use repeatable automated deployment pipelines.", "active": false, "moved": -1 },
 
-    { "quadrant": 1, "ring": 0, "label": "TypeSpec", "reason": "Preferred approach for contract-first API and schema definition.", "active": true, "moved": 1 },
+    { "quadrant": 1, "ring": 0, "label": "TypeSpec", "reason": "Preferred approach for contract-first API and schema definition.", "active": true, "moved": 1, "link": "https://typespec.io/" },
     { "quadrant": 1, "ring": 0, "label": "OpenAPI", "reason": "Standard format for API documentation and integration contracts.", "active": true, "moved": 0 },
     { "quadrant": 1, "ring": 0, "label": "Datadog", "reason": "Standard production observability platform.", "active": true, "moved": 0 },
     { "quadrant": 1, "ring": 0, "label": "GitHub Copilot", "reason": "Recommended AI assistant for day-to-day development.", "active": true, "moved": 0 },

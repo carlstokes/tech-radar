@@ -19,6 +19,9 @@
       <button data-zoom="all">Reset</button>
       <span id="quadrant-controls"></span>
       <button id="theme-toggle" type="button" aria-pressed="false">Dark mode</button>
+
+      <input id="radar-search" list="radar-search-options" type="search" placeholder="Find an entry..." autocomplete="off"/>
+      <datalist id="radar-search-options"></datalist>
     </div>
 
     <div id="title-container">
@@ -109,7 +112,9 @@
         controlsId: "controls",
         mainId: "radar-layout",
         themeToggleId: "theme-toggle",
-        quadrantControlsId: "quadrant-controls"
+        quadrantControlsId: "quadrant-controls",
+        searchId: "radar-search",
+        searchOptionsId: "radar-search-options"
       },
       display: displayOptions
     };
