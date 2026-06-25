@@ -136,12 +136,12 @@ class TechRadar {
 
     this.applyTheme(this.getInitialTheme());
 
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", event => {
+    window.matchMedia("(prefers-color-scheme: dark)").onchange = event => {
       if (!localStorage.getItem(THEME_STORAGE_KEY)) {
         this.applyTheme(event.matches ? "dark" : "light");
         this.refreshThemeColours();
       }
-    });
+    };
   }
 
   applyDisplayOptions() {
@@ -478,7 +478,10 @@ class TechRadar {
             .text(`${item.id}.`);
 
           const label = item.link
-            ? row.append("a").attr("href", item.link).attr("target", "_blank")
+            ? row.append("a")
+              .attr("href", item.link)
+              .attr("target", "_blank")
+              .attr("rel", "noopener noreferrer")
             : row.append("span");
 
           label.text(item.label);
@@ -569,6 +572,21 @@ class TechRadar {
     this.svg.call(this.zoom);
   }
 
+  scrollLegendToQuadrant(index) {
+    const legendElement = this.element("legendId");
+    const heading = this.legend
+      .selectAll(".legend-section h2")
+      .filter((d, sectionIndex) => sectionIndex === index)
+      .node();
+
+    if (!legendElement || !heading) return;
+
+    legendElement.scrollTo({
+      top: heading.offsetTop - legendElement.offsetTop,
+      behavior: "smooth"
+    });
+  }
+
   zoomToQuadrant(index) {
     const [x, y, width] = this.quadrants[index].box;
     const scale = 1000 / width;
@@ -579,12 +597,19 @@ class TechRadar {
     this.svg.transition()
       .duration(500)
       .call(this.zoom.transform, transform);
+
+    this.scrollLegendToQuadrant(index);
   }
 
   resetZoom() {
     this.svg.transition()
       .duration(500)
       .call(this.zoom.transform, d3.zoomIdentity);
+
+    this.element("legendId")?.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   }
 
   bindControls() {
