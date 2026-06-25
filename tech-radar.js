@@ -501,8 +501,12 @@ class TechRadar {
       const section = legend.append("div")
         .attr("class", "legend-section");
 
+      const quadrantCount = this.entries.filter(
+        entry => entry.quadrant === qIndex
+      ).length;
+
       section.append("h2")
-        .text(quadrant.name);
+        .text(`${quadrant.name} (${quadrantCount})`);
 
       this.config.rings.forEach((ring, rIndex) => {
         const items = this.entries
