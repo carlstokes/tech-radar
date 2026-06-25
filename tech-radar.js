@@ -12,7 +12,9 @@ const DEFAULT_ELEMENTS = {
   controlsId: "controls",
   mainId: "radar-layout",
   themeToggleId: "theme-toggle",
-  quadrantControlsId: "quadrant-controls"
+  quadrantControlsId: "quadrant-controls",
+  searchId: "search",
+  searchOptionsId: "search-options"
 };
 
 const DEFAULT_DISPLAY_OPTIONS = {
@@ -26,6 +28,8 @@ const DEFAULT_DISPLAY_OPTIONS = {
 class TechRadar {
   constructor(config, options = {}) {
     this.searchHighlightActive = false;
+    this.searchTimeout = undefined;
+
     this.config = config;
     this.elements = { ...DEFAULT_ELEMENTS, ...(options.elements || {}) };
     this.display = { ...DEFAULT_DISPLAY_OPTIONS, ...(options.display || {}) };
@@ -45,6 +49,7 @@ class TechRadar {
 
     this.entries = this.config.entries.map((entry, index) => {
       const point = this.pointForEntry(entry, index);
+
       return {
         ...entry,
         x: point.x,
@@ -55,6 +60,10 @@ class TechRadar {
     });
 
     this.assignNumbers(this.entries);
+
+    this.entryLookup = new Map(
+      this.entries.map(entry => [entry.label.toLowerCase(), entry])
+    );
   }
 
   render() {
@@ -368,6 +377,70 @@ class TechRadar {
     }
   }
 
+  bindHighlightEvents(selection, getEntry, options = {}) {
+    selection
+      .on("mouseenter.highlight focus.highlight", (event, d) => {
+        if (this.searchHighlightActive) return;
+
+        const entry = getEntry(d);
+
+        this.setLinkedHighlight(entry, true, {
+          scrollLegend: options.scrollLegend
+        });
+
+        if (options.onShow) {
+          options.onShow(event, entry);
+        }
+      })
+      .on("mouseleave.highlight blur.highlight", (event, d) => {
+        if (this.searchHighlightActive) return;
+
+        const entry = getEntry(d);
+
+        this.setLinkedHighlight(entry, false);
+
+        if (options.onHide) {
+          options.onHide(event, entry);
+        }
+      });
+  }
+
+  showTooltip(event, entry) {
+    this.tooltip
+      .style("left", `${event.clientX + 12}px`)
+      .style("top", `${event.clientY + 12}px`)
+      .style("opacity", 1)
+      .html(`<strong>${entry.id}. ${entry.label}</strong><br>${entry.reason || ""}`);
+  }
+
+  hideTooltip() {
+    this.tooltip.style("opacity", 0);
+  }
+
+  drawMarker(target, entry) {
+    const colour = this.ringColour(entry.ring);
+
+    if (entry.moved === 1) {
+      target.append("path")
+        .attr("d", "M -11,7 L 11,7 L 0,-14 Z")
+        .attr("fill", colour);
+    } else if (entry.moved === -1) {
+      target.append("path")
+        .attr("d", "M -11,-7 L 11,-7 L 0,14 Z")
+        .attr("fill", colour);
+    } else if (entry.moved === 2) {
+      target.append("path")
+        .attr("d", d3.symbol().type(d3.symbolStar).size(220)())
+        .attr("fill", colour);
+    } else {
+      target.append("circle")
+        .attr("r", 10)
+        .attr("fill", colour);
+    }
+
+    target.append("text").text(entry.id);
+  }
+
   drawBlips() {
     const blips = this.root.selectAll(".blip")
       .data(this.entries, d => d.id)
@@ -381,30 +454,14 @@ class TechRadar {
       .on("mousemove", (event, d) => {
         if (this.searchHighlightActive) return;
 
-        this.tooltip
-          .style("left", `${event.clientX + 12}px`)
-          .style("top", `${event.clientY + 12}px`)
-          .style("opacity", 1)
-          .html(`<strong>${d.id}. ${d.label}</strong><br>${d.reason || ""}`);
-
-        this.setLinkedHighlight(d, true, { scrollLegend: true });
-      })
-      .on("mouseleave", (event, d) => {
-        if (this.searchHighlightActive) return;
-
-        this.tooltip.style("opacity", 0);
-        this.setLinkedHighlight(d, false);
-      })
-      .on("focus", (event, d) => {
-        if (this.searchHighlightActive) return;
-
-        this.setLinkedHighlight(d, true, { scrollLegend: true });
-      })
-      .on("blur", (event, d) => {
-        if (this.searchHighlightActive) return;
-
-        this.setLinkedHighlight(d, false);
+        this.showTooltip(event, d);
       });
+
+    this.bindHighlightEvents(blips, d => d, {
+      scrollLegend: true,
+      onShow: (event, entry) => this.showTooltip(event, entry),
+      onHide: () => this.hideTooltip()
+    });
 
     blips.each((d, index, nodes) => {
       const group = d3.select(nodes[index]);
@@ -412,27 +469,7 @@ class TechRadar {
         ? group.append("a").attr("href", d.link).attr("target", "_blank")
         : group;
 
-      const colour = this.ringColour(d.ring);
-
-      if (d.moved === 1) {
-        target.append("path")
-          .attr("d", "M -11,7 L 11,7 L 0,-14 Z")
-          .attr("fill", colour);
-      } else if (d.moved === -1) {
-        target.append("path")
-          .attr("d", "M -11,-7 L 11,-7 L 0,14 Z")
-          .attr("fill", colour);
-      } else if (d.moved === 2) {
-        target.append("path")
-          .attr("d", d3.symbol().type(d3.symbolStar).size(220)())
-          .attr("fill", colour);
-      } else {
-        target.append("circle")
-          .attr("r", 10)
-          .attr("fill", colour);
-      }
-
-      target.append("text").text(d.id);
+      this.drawMarker(target, d);
     });
 
     d3.forceSimulation(this.entries)
@@ -476,27 +513,9 @@ class TechRadar {
           const row = ringBlock.append("div")
             .attr("class", "legend-item")
             .attr("id", `legend-item-${item.id}`)
-            .attr("tabindex", 0)
-            .on("mouseenter", () => {
-              if (!this.searchHighlightActive) {
-                this.setLinkedHighlight(item, true);
-              }
-            })
-            .on("mouseleave", () => {
-              if (!this.searchHighlightActive) {
-                this.setLinkedHighlight(item, false);
-              }
-            })
-            .on("focus", () => {
-              if (!this.searchHighlightActive) {
-                this.setLinkedHighlight(item, true);
-              }
-            })
-            .on("blur", () => {
-              if (!this.searchHighlightActive) {
-                this.setLinkedHighlight(item, false);
-              }
-            });
+            .attr("tabindex", 0);
+
+          this.bindHighlightEvents(row, () => item);
 
           row.append("span")
             .attr("class", "num")
@@ -645,6 +664,7 @@ class TechRadar {
       search.value = "";
     }
 
+    this.hideTooltip();
     this.clearSelection();
   }
 
@@ -737,20 +757,20 @@ class TechRadar {
   }
 
   goToEntry(label) {
-    const entry = this.entries.find(
-      item => item.label.toLowerCase() === label.trim().toLowerCase()
-    );
+    const entry = this.entryLookup.get(label.trim().toLowerCase());
 
     if (!entry) return;
 
+    clearTimeout(this.searchTimeout);
+
     this.searchHighlightActive = true;
-    this.tooltip.style("opacity", 0);
+    this.hideTooltip();
 
     this.zoomToQuadrant(entry.quadrant);
     this.scrollLegendToEntry(entry);
     this.setLinkedHighlight(entry, true);
 
-    setTimeout(() => {
+    this.searchTimeout = setTimeout(() => {
       this.clearSearch();
     }, 2000);
   }
