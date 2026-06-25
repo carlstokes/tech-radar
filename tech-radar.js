@@ -516,7 +516,7 @@ class TechRadar {
 
         ringBlock.append("h3")
           .attr("class", `guidance-name ring-name-${rIndex}`)
-          .text(ring.name);
+          .text(`${ring.name} (${items.length})`);
 
         items.forEach(item => {
           const row = ringBlock.append("div")
