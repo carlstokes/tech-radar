@@ -409,8 +409,17 @@ class TechRadar {
     this.tooltip
       .style("left", `${event.clientX + 12}px`)
       .style("top", `${event.clientY + 12}px`)
-      .style("opacity", 1)
-      .html(`<strong>${entry.id}. ${entry.label}</strong><br>${entry.reason || ""}`);
+      .style("opacity", 1);
+
+    this.tooltip.html("");
+
+    this.tooltip.append("strong")
+      .text(`${entry.id}. ${entry.label}`);
+
+    this.tooltip.append("br");
+
+    this.tooltip.append("span")
+      .text(entry.reason || "");
   }
 
   hideTooltip() {
@@ -466,7 +475,7 @@ class TechRadar {
     blips.each((d, index, nodes) => {
       const group = d3.select(nodes[index]);
       const target = d.link
-        ? group.append("a").attr("href", d.link).attr("target", "_blank")
+        ? group.append("a").attr("href", d.link).attr("target", "_blank").attr("rel", "noopener noreferrer")
         : group;
 
       this.drawMarker(target, d);
