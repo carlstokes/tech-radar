@@ -1,0 +1,51 @@
+{
+  "title": "Enterprise Radar",
+  "date": "2026.06",
+  "caption": "What we invest in",
+  "quadrants": [
+    { "name": "Business Capabilities", "purpose": "Capabilities that create business value." },
+    { "name": "Data & Intelligence", "purpose": "Data, reporting, analytics and AI." },
+    { "name": "Enterprise Platforms", "purpose": "Buy, build and integration platforms." },
+    { "name": "Ways of Working", "purpose": "Operating model and organisational capabilities." }
+  ],
+  "rings": [
+    { "name": "SCALE", "description": "Strategic capability receiving significant investment and broad adoption." },
+    { "name": "ADOPT", "description": "Recommended capability or approach for new initiatives." },
+    { "name": "EVALUATE", "description": "Being explored or piloted to determine future value." },
+    { "name": "RETIRE", "description": "Being phased out or not recommended for future investment." }
+  ],
+  "entries": [
+    { "quadrant": 0, "ring": 0, "label": "Customer 360", "reason": "Strategic capability for a joined-up view of customers across channels.", "active": true, "moved": 1 },
+    { "quadrant": 0, "ring": 0, "label": "Loyalty", "reason": "Core customer retention and engagement capability.", "active": true, "moved": 0 },
+    { "quadrant": 0, "ring": 0, "label": "Digital Ordering", "reason": "Strategic digital revenue and customer convenience capability.", "active": true, "moved": 0 },
+    { "quadrant": 0, "ring": 1, "label": "Revenue Optimisation", "reason": "Recommended capability for improving commercial decision-making.", "active": true, "moved": 0 },
+    { "quadrant": 0, "ring": 1, "label": "Personalisation", "reason": "Improves relevance of digital experiences and offers.", "active": true, "moved": 1 },
+    { "quadrant": 0, "ring": 2, "label": "Conversational Commerce", "reason": "Explore customer journeys supported by conversational interfaces.", "active": true, "moved": 1 },
+    { "quadrant": 0, "ring": 3, "label": "Manual Customer Segmentation", "reason": "Retire manual and disconnected approaches to segmentation.", "active": false, "moved": -1 },
+
+    { "quadrant": 1, "ring": 0, "label": "Enterprise Data Platform", "reason": "Strategic platform for governed reporting, analytics and insight.", "active": true, "moved": 0 },
+    { "quadrant": 1, "ring": 0, "label": "Business Intelligence", "reason": "Core enterprise reporting and decision-support capability.", "active": true, "moved": 0 },
+    { "quadrant": 1, "ring": 1, "label": "Data Products", "reason": "Recommended approach for reusable and accountable data assets.", "active": true, "moved": 1 },
+    { "quadrant": 1, "ring": 1, "label": "Master Data Management", "reason": "Supports trusted reference data across the enterprise.", "active": true, "moved": 0 },
+    { "quadrant": 1, "ring": 2, "label": "Generative AI", "reason": "Explore practical use cases with clear governance and risk controls.", "active": true, "moved": 1 },
+    { "quadrant": 1, "ring": 2, "label": "Knowledge Graphs", "reason": "Explore richer data relationships for intelligence and discovery.", "active": true, "moved": 0 },
+    { "quadrant": 1, "ring": 3, "label": "Spreadsheet Reporting", "reason": "Move away from unmanaged reporting where governed platforms exist.", "active": false, "moved": -1 },
+
+    { "quadrant": 2, "ring": 0, "label": "Microsoft 365", "reason": "Strategic collaboration and productivity platform.", "active": true, "moved": 0 },
+    { "quadrant": 2, "ring": 0, "label": "Dynamics 365", "reason": "Strategic enterprise platform where it fits business capability needs.", "active": true, "moved": 0 },
+    { "quadrant": 2, "ring": 1, "label": "Identity Platform", "reason": "Recommended enterprise capability for authentication and access management.", "active": true, "moved": 0 },
+    { "quadrant": 2, "ring": 1, "label": "API Platform", "reason": "Recommended integration surface for shared capabilities.", "active": true, "moved": 0 },
+    { "quadrant": 2, "ring": 2, "label": "Internal Developer Platform", "reason": "Explore to improve delivery speed, consistency and developer experience.", "active": true, "moved": 1 },
+    { "quadrant": 2, "ring": 2, "label": "Enterprise AI Platform", "reason": "Evaluate shared foundations for safe AI adoption.", "active": true, "moved": 1 },
+    { "quadrant": 2, "ring": 3, "label": "Legacy Intranet Platforms", "reason": "Retire where modern collaboration platforms meet the need.", "active": false, "moved": -1 },
+
+    { "quadrant": 3, "ring": 0, "label": "Product Operating Model", "reason": "Strategic operating model for persistent ownership and outcome delivery.", "active": true, "moved": 1 },
+    { "quadrant": 3, "ring": 1, "label": "Team Topologies", "reason": "Recommended approach for organising teams around flow and cognitive load.", "active": true, "moved": 1 },
+    { "quadrant": 3, "ring": 1, "label": "Outcome-Based Roadmaps", "reason": "Recommended for aligning investment to measurable business outcomes.", "active": true, "moved": 0 },
+    { "quadrant": 3, "ring": 1, "label": "Architecture Decision Records", "reason": "Recommended for clear and lightweight decision governance.", "active": true, "moved": 0 },
+    { "quadrant": 3, "ring": 2, "label": "Platform Engineering", "reason": "Evaluate as a way to improve delivery consistency and engineering enablement.", "active": true, "moved": 1 },
+    { "quadrant": 3, "ring": 2, "label": "AI-assisted Ways of Working", "reason": "Explore how AI changes productivity, controls and operating practices.", "active": true, "moved": 1 },
+    { "quadrant": 3, "ring": 3, "label": "Project-Based Funding", "reason": "Move towards persistent product investment where appropriate.", "active": false, "moved": -1 },
+    { "quadrant": 3, "ring": 3, "label": "Annual Release Cycles", "reason": "Retire where teams can move safely through smaller, more frequent changes.", "active": false, "moved": -1 }
+  ]
+}

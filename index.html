@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Engineering Tech Radar</title>
+  <link rel="stylesheet" href="tech-radar.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="tech-radar.js"></script>
+</head>
+
+<body>
+  <header>
+    <div id="title-container">
+      <h1 id="title"></h1>
+      <p id="caption" class="caption"></p>
+      <time class="date" id="date"></time>
+    </div>
+    <div class="controls" id="controls">
+      <label class="radar-selector-label" for="radar-selector">
+        <select id="radar-selector"></select>
+      </label>
+      <button data-zoom="all">Reset</button>
+      <span id="quadrant-controls"></span>
+      <button id="theme-toggle" type="button" aria-pressed="false">Dark mode</button>
+    </div>
+  </header>
+
+  <main id="radar-layout">
+    <section id="radar-wrap">
+      <svg id="radar" viewBox="0 0 1000 1000" aria-label="Technology radar"></svg>
+    </section>
+    <aside id="legend"></aside>
+  </main>
+
+  <div id="guidance" aria-label="Radar guidance"></div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+
+    const displayOptions = {
+      sidebar: params.get("sidebar") !== "false",
+      guidance: params.get("guidance") !== "false",
+      controls: params.get("controls") !== "false",
+      title: params.get("title") !== "false",
+      theme: params.get("theme") || "system"
+    };
+
+    const availableRadars = [
+      {
+        key: "engineering",
+        label: "Engineering",
+        path: "radars/engineering.radar"
+      },
+      {
+        key: "architecture",
+        label: "Architecture",
+        path: "radars/architecture.radar"
+      },
+      {
+        key: "enterprise",
+        label: "Enterprise",
+        path: "radars/enterprise.radar"
+      }
+    ];
+
+    const defaultRadar = "engineering";
+
+    const selector = document.getElementById("radar-selector");
+
+    function getRadarDefinition(key) {
+      return availableRadars.find(radar => radar.key === key);
+    }
+
+    function buildRadarSelector() {
+      selector.innerHTML = "";
+
+      availableRadars.forEach(radar => {
+        const option = document.createElement("option");
+        option.value = radar.key;
+        option.textContent = radar.label;
+        selector.appendChild(option);
+      });
+    }
+
+    const requestedRadar = params.get("radar") || defaultRadar;
+    const selectedRadar = getRadarDefinition(requestedRadar)
+      ? requestedRadar
+      : defaultRadar;
+
+    buildRadarSelector();
+    selector.value = selectedRadar;
+
+    const radarOptions = {
+      elements: {
+        svgId: "radar",
+        legendId: "legend",
+        guidanceId: "guidance",
+        tooltipId: "tooltip",
+        titleId: "title",
+        captionId: "caption",
+        dateId: "date",
+        titleContainerId: "title-container",
+        controlsId: "controls",
+        mainId: "radar-layout",
+        themeToggleId: "theme-toggle",
+        quadrantControlsId: "quadrant-controls"
+      },
+      display: displayOptions
+    };
+
+    async function loadRadar(name) {
+      const radarDefinition = getRadarDefinition(name);
+
+      if (!radarDefinition) {
+        throw new Error(`Unknown radar: ${name}`);
+      }
+
+      const response = await fetch(radarDefinition.path);
+
+      if (!response.ok) {
+        throw new Error(`Could not load radar config: ${name}`);
+      }
+
+      const radarData = await response.json();
+      new TechRadar(radarData, radarOptions).render();
+    }
+
+    selector.addEventListener("change", event => {
+      const url = new URL(window.location.href);
+      url.searchParams.set("radar", event.target.value);
+      window.location.href = url.toString();
+    });
+
+    loadRadar(selectedRadar).catch(error => {
+      console.error(error);
+      document.getElementById("legend").textContent =
+        "Unable to load radar configuration.";
+    });
+  </script>
+</body>
+
+</html>
