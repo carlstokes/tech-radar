@@ -98,7 +98,7 @@ class TechRadar {
     const date = this.element("dateId");
 
     if (title) title.textContent = this.config.title;
-    if (title) caption.textContent = this.config.caption;
+    if (caption) caption.textContent = this.config.caption;
     if (date) date.textContent = this.config.date;
   }
 
