@@ -1,5 +1,5 @@
 # Tech Radar
-An interactive Technology Radar for communicating an organisation's technology strategy.
+A simnle, configurable Technology Radar application for communicating an organisation's technology strategy.
 
 A Technology Radar provides a visual framework for communicating an organisation's view of technology. Rather than simply cataloguing technologies, it communicates strategic direction by identifying which technologies are recommended for adoption, which are being evaluated, and which should be avoided.
 
