@@ -91,6 +91,49 @@ Adding a new radar simply requires:
 1. Creating a new radar JSON file.
 2. Adding an entry to `radars.json`.
 
+## Display Options
+The appearance of the radar can be customised using URL query parameters. These are useful when embedding the radar in documentation or presenting a simplified view.
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `radar` | Default radar | Selects the radar to display. |
+| `sidebar` | `true` | Shows or hides the legend. |
+| `guidance` | `true` | Shows or hides the guidance section. |
+| `controls` | `true` | Shows or hides the toolbar. |
+| `title` | `true` | Shows or hides the radar title, caption and date. |
+| `theme` | `system` | Sets the theme (`light`, `dark` or `system`). |
+
+### Examples
+Display the Enterprise radar:
+
+```
+?radar=enterprise
+```
+
+Hide the guidance section:
+
+```
+?guidance=false
+```
+
+Show only the radar and legend:
+
+```
+?controls=false&guidance=false
+```
+
+Force the dark theme:
+
+```
+?theme=dark
+```
+
+Combine multiple options:
+
+```
+?radar=architecture&theme=dark&guidance=false
+```
+
 ## Running Locally
 Clone the repository and serve the project using any local web server.
 
