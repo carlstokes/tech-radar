@@ -23,7 +23,7 @@ Technology Radars are commonly used to:
 - Interactive search and technology highlighting.
 - Zoom directly to individual quadrants.
 - Light and dark themes.
-- Configurable rings, quadrants and colours.
+- Configurable rings and quadrants.
 - JSON-based radar configuration.
 - Static deployment with no backend dependencies.
 
@@ -44,7 +44,7 @@ A common set of rings is:
 | **Assess** | Technologies that warrant investigation and experimentation before broader adoption. |
 | **Hold** | Technologies that should generally be avoided for new work or are being phased out. |
 
-The names, colours, and descriptions of the rings are fully configurable.
+The names, and descriptions of the rings are fully configurable.
 
 ### Quadrants
 The **four quadrants** group related technologies into categories.
@@ -84,6 +84,34 @@ radars/
 ├── engineering.json
 ├── architecture.json
 └── enterprise.json
+```
+A radar configuration contains:
+
+- General information (`title`, `caption`, `date`).
+- Four configurable quadrants.
+- Four configurable rings.
+- A collection of radar entries.
+
+Each entry specifies:
+
+- The quadrant it belongs to.
+- The ring it belongs to.
+- A label.
+- A short description.
+- An optional movement indicator.
+- An optional hyperlink.
+
+For example:
+
+```json
+{
+  "label": "Dapr",
+  "quadrant": 2,
+  "ring": 1,
+  "reason": "Simplifies service-to-service communication.",
+  "moved": 1,
+  "link": "https://docs.dapr.io"
+}
 ```
 
 Adding a new radar simply requires:
