@@ -7,6 +7,8 @@ Technology Radars help architecture and engineering teams communicate technical 
 
 This project is a lightweight, browser-based implementation written in HTML, CSS, and JavaScript, making it easy to host as a static website using GitHub Pages.
 
+Unlike many Technology Radar implementations, this project supports multiple configurable radars from a single application, making it suitable for engineering, architecture, enterprise, platform, security, or other technology domains.
+
 Technology Radars are commonly used to:
 
 - Communicate technology strategy.
@@ -15,6 +17,15 @@ Technology Radars are commonly used to:
 - Identify technologies that should be adopted, monitored, or retired.
 - Encourage consistency across engineering teams.
 - Support technology governance and decision-making.
+
+## Features
+- Multiple configurable radars.
+- Interactive search and technology highlighting.
+- Zoom directly to individual quadrants.
+- Light and dark themes.
+- Configurable rings, quadrants and colours.
+- JSON-based radar configuration.
+- Static deployment with no backend dependencies.
 
 ## Radar Structure
 Every Technology Radar consists of **four rings** and **four quadrants**, creating sixteen segments in which technologies are positioned.
@@ -47,6 +58,39 @@ Common examples include:
 
 Quadrant names and descriptions are fully configurable, allowing each radar to represent different organisational domains or technology landscapes.
 
+## Configuration
+The application is driven entirely by JSON configuration.
+
+The `radars/radars.json` file defines the available radars, the default radar, and the files that should be loaded.
+
+```json
+{
+  "default": "engineering",
+  "radars": [
+    {
+      "id": "engineering",
+      "name": "Engineering",
+      "file": "engineering.json"
+    }
+  ]
+}
+```
+
+Each radar is then defined in its own JSON file.
+
+```text
+radars/
+├── radars.json
+├── engineering.json
+├── architecture.json
+└── enterprise.json
+```
+
+Adding a new radar simply requires:
+
+1. Creating a new radar JSON file.
+2. Adding an entry to `radars.json`.
+
 ## Running Locally
 Clone the repository and serve the project using any local web server.
 
@@ -65,11 +109,7 @@ http://localhost:8000
 ## Hosting
 The tech-radar is entirely static and can be hosted using GitHub Pages or any web server capable of serving static content.
 
-## Where we're at
-This is rougth and ready first version to learn from with a bunch of different radar examples.
-
 ## Acknowledgements
-
-This project was inspired by the excellent [Zalando Tech Radar](https://github.com/zalando/tech-radar).
+This project was inspired by the excellent [Zalando Tech Radar](https://github.com/zalando/tech-radar) and the [Thoughtworks Technology Radar](https://www.thoughtworks.com/radar).
 
 While the concept and overall approach draw inspiration from Zalando's work, this implementation has been substantially rewritten with its own codebase, data format, configuration model, and user interface.

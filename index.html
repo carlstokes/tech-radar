@@ -20,7 +20,8 @@
       <span id="quadrant-controls"></span>
       <button id="theme-toggle" type="button" aria-pressed="false">Dark mode</button>
 
-      <input id="radar-search" list="radar-search-options" type="search" placeholder="Find an entry..." autocomplete="off"/>
+      <input id="radar-search" list="radar-search-options" type="search" placeholder="Find an entry..."
+        autocomplete="off" />
       <datalist id="radar-search-options"></datalist>
     </div>
 
@@ -29,7 +30,7 @@
       <p id="caption" class="caption"></p>
       <time class="date" id="date"></time>
     </div>
-    
+
   </header>
 
   <main id="radar-layout">
@@ -45,6 +46,7 @@
 
   <script>
     const params = new URLSearchParams(window.location.search);
+    const selector = document.getElementById("radar-selector");
 
     const displayOptions = {
       sidebar: params.get("sidebar") !== "false",
@@ -53,51 +55,6 @@
       title: params.get("title") !== "false",
       theme: params.get("theme") || "system"
     };
-
-    const availableRadars = [
-      {
-        key: "engineering",
-        label: "Engineering",
-        path: "radars/engineering.radar"
-      },
-      {
-        key: "architecture",
-        label: "Architecture",
-        path: "radars/architecture.radar"
-      },
-      {
-        key: "enterprise",
-        label: "Enterprise",
-        path: "radars/enterprise.radar"
-      }
-    ];
-
-    const defaultRadar = "engineering";
-
-    const selector = document.getElementById("radar-selector");
-
-    function getRadarDefinition(key) {
-      return availableRadars.find(radar => radar.key === key);
-    }
-
-    function buildRadarSelector() {
-      selector.innerHTML = "";
-
-      availableRadars.forEach(radar => {
-        const option = document.createElement("option");
-        option.value = radar.key;
-        option.textContent = radar.label;
-        selector.appendChild(option);
-      });
-    }
-
-    const requestedRadar = params.get("radar") || defaultRadar;
-    const selectedRadar = getRadarDefinition(requestedRadar)
-      ? requestedRadar
-      : defaultRadar;
-
-    buildRadarSelector();
-    selector.value = selectedRadar;
 
     const radarOptions = {
       elements: {
@@ -119,30 +76,69 @@
       display: displayOptions
     };
 
-    async function loadRadar(name) {
-      const radarDefinition = getRadarDefinition(name);
-
-      if (!radarDefinition) {
-        throw new Error(`Unknown radar: ${name}`);
-      }
-
-      const response = await fetch(radarDefinition.path);
+    async function loadRadarRegistry() {
+      const response = await fetch("radars/radars.json");
 
       if (!response.ok) {
-        throw new Error(`Could not load radar config: ${name}`);
+        throw new Error("Could not load radar registry.");
+      }
+
+      return response.json();
+    }
+
+    function getRadarDefinition(registry, id) {
+      return registry.radars.find(radar => radar.id === id);
+    }
+
+    function buildRadarSelector(registry) {
+      selector.innerHTML = "";
+
+      registry.radars.forEach(radar => {
+        const option = document.createElement("option");
+        option.value = radar.id;
+        option.textContent = radar.name;
+        selector.appendChild(option);
+      });
+    }
+
+    async function loadRadar(registry, id) {
+      const radarDefinition = getRadarDefinition(registry, id);
+
+      if (!radarDefinition) {
+        throw new Error(`Unknown radar: ${id}`);
+      }
+
+      const response = await fetch(`radars/${radarDefinition.file}`);
+
+      if (!response.ok) {
+        throw new Error(`Could not load radar config: ${id}`);
       }
 
       const radarData = await response.json();
       new TechRadar(radarData, radarOptions).render();
     }
 
-    selector.addEventListener("change", event => {
-      const url = new URL(window.location.href);
-      url.searchParams.set("radar", event.target.value);
-      window.location.href = url.toString();
-    });
+    async function initialise() {
+      const registry = await loadRadarRegistry();
 
-    loadRadar(selectedRadar).catch(error => {
+      const requestedRadar = params.get("radar") || registry.default;
+      const selectedRadar = getRadarDefinition(registry, requestedRadar)
+        ? requestedRadar
+        : registry.default;
+
+      buildRadarSelector(registry);
+      selector.value = selectedRadar;
+
+      selector.addEventListener("change", event => {
+        const url = new URL(window.location.href);
+        url.searchParams.set("radar", event.target.value);
+        window.location.href = url.toString();
+      });
+
+      await loadRadar(registry, selectedRadar);
+    }
+
+    initialise().catch(error => {
       console.error(error);
       document.getElementById("legend").textContent =
         "Unable to load radar configuration.";

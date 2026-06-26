@@ -1,0 +1,20 @@
+{
+  "default": "engineering",
+  "radars": [
+    {
+      "id": "architecture",
+      "name": "Architecture",
+      "file": "architecture.json"
+    },
+    {
+      "id": "engineering",
+      "name": "Engineering",
+      "file": "engineering.json"
+    },
+    {
+      "id": "enterprise",
+      "name": "Enterprise",
+      "file": "enterprise.json"
+    }
+  ]
+}
