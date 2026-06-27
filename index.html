@@ -37,10 +37,19 @@
     <section id="radar-wrap">
       <svg id="radar" viewBox="0 0 1000 1000" aria-label="Technology radar"></svg>
     </section>
-    <aside id="legend"></aside>
-  </main>
 
-  <div id="guidance" aria-label="Radar guidance"></div>
+    <aside id="radar-sidebar">
+      <section class="sidebar-panel">
+        <header class="sidebar-header">Legend</header>
+        <div id="legend"></div>
+      </section>
+
+      <details id="guidance-panel">
+        <summary>How to Read This Radar</summary>
+        <div id="guidance" aria-label="Radar guidance"></div>
+      </details>
+    </aside>
+  </main>
 
   <div class="tooltip" id="tooltip"></div>
 

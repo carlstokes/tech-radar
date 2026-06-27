@@ -691,7 +691,7 @@ class TechRadar {
     const ringsSection = grid.append("section");
 
     ringsSection.append("h2")
-      .text("Ring Assignments");
+      .text("Rings");
 
     const ringsTable = ringsSection.append("table");
 
