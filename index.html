@@ -11,26 +11,49 @@
 </head>
 
 <body>
-  <header>
-    <div class="controls" id="controls">
-      <label class="radar-selector-label" for="radar-selector">
-        <select id="radar-selector"></select>
-      </label>
-      <button data-zoom="all">Reset</button>
-      <span id="quadrant-controls"></span>
-      <button id="theme-toggle" type="button" aria-pressed="false">Dark mode</button>
-
-      <input id="radar-search" list="radar-search-options" type="search" placeholder="Find an entry..."
-        autocomplete="off" />
-      <datalist id="radar-search-options"></datalist>
-    </div>
-
+  <header class="app-header">
     <div id="title-container">
       <h1 id="title"></h1>
-      <p id="caption" class="caption"></p>
-      <time class="date" id="date"></time>
+      <div class="title-meta">
+        <p id="caption" class="caption"></p>
+        <time class="date" id="date"></time>
+      </div>
     </div>
 
+    <div class="controls" id="controls" aria-label="Radar controls">
+      <div class="control-group">
+        <label class="radar-selector-label" for="radar-selector">
+          <span class="control-label">Radar</span>
+          <select id="radar-selector"></select>
+        </label>
+      </div>
+
+      <div class="control-group search-group">
+        <label class="search-label" for="radar-search">Search</label>
+        <div class="search-control">
+          <span aria-hidden="true" class="search-icon">⌕</span>
+          <input id="radar-search" list="radar-search-options" type="search" placeholder="Find an entry..."
+            autocomplete="off" />
+          <datalist id="radar-search-options"></datalist>
+        </div>
+      </div>
+
+      <div class="control-group zoom-controls" aria-label="Zoom controls">
+        <span class="control-label">Zoom</span>
+        <div id="quadrant-controls" class="quadrant-icon-controls"></div>
+      </div>
+
+      <div class="control-group reset-controls" aria-label="Reset controls">
+        <button data-zoom="all" class="icon-button reset-button" type="button" title="Reset view" aria-label="Reset view">
+          <span aria-hidden="true">↺</span>
+        </button>
+      </div>
+
+      <div class="control-group appearance-controls" aria-label="Appearance controls">
+        <button id="theme-toggle" class="icon-button" type="button" aria-pressed="false" title="Toggle theme"
+          aria-label="Toggle theme">🌙</button>
+      </div>
+    </div>
   </header>
 
   <main id="radar-layout">

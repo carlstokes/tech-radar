@@ -138,7 +138,9 @@ class TechRadar {
 
     if (toggle) {
       const isDark = theme === "dark";
-      toggle.textContent = isDark ? "Light mode" : "Dark mode";
+      toggle.textContent = isDark ? "☀" : "🌙";
+      toggle.title = isDark ? "Switch to light mode" : "Switch to dark mode";
+      toggle.setAttribute("aria-label", toggle.title);
       toggle.setAttribute("aria-pressed", String(isDark));
     }
   }
@@ -297,12 +299,17 @@ class TechRadar {
 
     container.innerHTML = "";
 
+    const quadrantIcons = ["◰", "◳", "◱", "◲"];
+
     this.config.quadrants.forEach((quadrant, index) => {
       const button = document.createElement("button");
 
       button.type = "button";
+      button.className = "icon-button quadrant-icon-button";
       button.dataset.zoom = String(index);
-      button.textContent = quadrant.name;
+      button.title = `Zoom to ${quadrant.name}`;
+      button.setAttribute("aria-label", `Zoom to ${quadrant.name}`);
+      button.textContent = quadrantIcons[index] || String(index + 1);
 
       container.appendChild(button);
     });
