@@ -515,7 +515,15 @@ class TechRadar {
 
     document.addEventListener("click", event => {
       if (!this.selectionActive) return;
-      if (event.target.closest("a")) return;
+
+      const target = event.target;
+
+      if (!(target instanceof Element)) return;
+      if (target.closest(`#${this.elements.controlsId}`)) return;
+      if (target.closest(`#${this.elements.tooltipId}`)) return;
+      if (target.closest(".blip")) return;
+      if (target.closest(".legend-item")) return;
+      if (target.closest("a, button, input, select, textarea")) return;
 
       this.clearSelection();
     });
@@ -830,7 +838,16 @@ class TechRadar {
       this.refreshThemeColours();
     });
 
-    this.element("searchId")?.addEventListener("change", event => {
+    const search = this.element("searchId");
+
+    search?.addEventListener("change", event => {
+      this.goToEntry(event.target.value);
+    });
+
+    search?.addEventListener("keydown", event => {
+      if (event.key !== "Enter") return;
+
+      event.preventDefault();
       this.goToEntry(event.target.value);
     });
   }
@@ -898,6 +915,12 @@ class TechRadar {
     if (!entry) return;
 
     this.selectEntry(entry);
+
+    const search = this.element("searchId");
+
+    if (search) {
+      search.value = "";
+    }
   }
 }
 
