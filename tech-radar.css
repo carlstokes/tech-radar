@@ -231,6 +231,7 @@ svg:active {
   position: fixed;
   pointer-events: none;
   opacity: 0;
+  transform: translateY(-50%);
   background: var(--tooltip-bg);
   color: var(--tooltip-text);
   padding: 6px 8px;
@@ -238,6 +239,15 @@ svg:active {
   font-size: 12px;
   max-width: 260px;
   z-index: 10;
+}
+
+.tooltip.selected {
+  pointer-events: auto;
+}
+
+.tooltip a {
+  color: inherit;
+  font-weight: bold;
 }
 
 #guidance {

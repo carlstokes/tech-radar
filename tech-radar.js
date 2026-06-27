@@ -27,8 +27,8 @@ const DEFAULT_DISPLAY_OPTIONS = {
 
 class TechRadar {
   constructor(config, options = {}) {
-    this.searchHighlightActive = false;
-    this.searchTimeout = undefined;
+    this.selectionActive = false;
+    this.selectedEntry = undefined;
 
     this.config = config;
     this.elements = { ...DEFAULT_ELEMENTS, ...(options.elements || {}) };
@@ -91,6 +91,8 @@ class TechRadar {
     this.drawBlips();
     this.buildQuadrantControls();
     this.bindControls();
+    this.bindTooltipPositioning();
+    this.bindSelectionClearing();
 
     return this;
   }
@@ -367,20 +369,15 @@ class TechRadar {
         return active && this.id !== `legend-item-${entry.id}`;
       });
 
-    const legendItem = document.getElementById(`legend-item-${entry.id}`);
-
-    if (active && legendItem && options.scrollLegend) {
-      legendItem.scrollIntoView({
-        block: "nearest",
-        behavior: "smooth"
-      });
+    if (active && options.scrollLegend) {
+      this.scrollLegendToEntry(entry);
     }
   }
 
   bindHighlightEvents(selection, getEntry, options = {}) {
     selection
       .on("mouseenter.highlight focus.highlight", (event, d) => {
-        if (this.searchHighlightActive) return;
+        if (this.selectionActive) return;
 
         const entry = getEntry(d);
 
@@ -393,7 +390,7 @@ class TechRadar {
         }
       })
       .on("mouseleave.highlight blur.highlight", (event, d) => {
-        if (this.searchHighlightActive) return;
+        if (this.selectionActive) return;
 
         const entry = getEntry(d);
 
@@ -405,16 +402,65 @@ class TechRadar {
       });
   }
 
-  showTooltip(event, entry) {
+  isBlipVisible(entry) {
+    const blip = document.getElementById(`blip-${entry.id}`);
+    const svgElement = this.element("svgId");
+
+    if (!blip || !svgElement) return false;
+
+    const blipBox = blip.getBoundingClientRect();
+    const svgBox = svgElement.getBoundingClientRect();
+    const blipCentre = {
+      x: blipBox.left + blipBox.width / 2,
+      y: blipBox.top + blipBox.height / 2
+    };
+
+    return (
+      blipCentre.x >= svgBox.left &&
+      blipCentre.x <= svgBox.right &&
+      blipCentre.y >= svgBox.top &&
+      blipCentre.y <= svgBox.bottom &&
+      blipCentre.x >= 0 &&
+      blipCentre.x <= window.innerWidth &&
+      blipCentre.y >= 0 &&
+      blipCentre.y <= window.innerHeight
+    );
+  }
+
+  positionTooltip(entry) {
+    const blip = document.getElementById(`blip-${entry.id}`);
+
+    if (!blip || !this.isBlipVisible(entry)) {
+      this.tooltip.style("opacity", 0);
+      return false;
+    }
+
+    const box = blip.getBoundingClientRect();
+
     this.tooltip
-      .style("left", `${event.clientX + 12}px`)
-      .style("top", `${event.clientY + 12}px`)
-      .style("opacity", 1);
+      .style("left", `${box.left + box.width + 12}px`)
+      .style("top", `${box.top + box.height / 2}px`);
+
+    return true;
+  }
+
+  showTooltip(entry, options = {}) {
+    const visible = this.positionTooltip(entry);
+
+    this.tooltip
+      .style("opacity", visible ? 1 : 0)
+      .classed("selected", Boolean(options.selected));
 
     this.tooltip.html("");
 
-    this.tooltip.append("strong")
-      .text(`${entry.id}. ${entry.label}`);
+    const title = entry.link
+      ? this.tooltip.append("a")
+        .attr("href", entry.link)
+        .attr("target", "_blank")
+        .attr("rel", "noopener noreferrer")
+      : this.tooltip.append("strong");
+
+    title.text(`${entry.id}. ${entry.label}`);
 
     this.tooltip.append("br");
 
@@ -423,7 +469,56 @@ class TechRadar {
   }
 
   hideTooltip() {
-    this.tooltip.style("opacity", 0);
+    this.tooltip
+      .style("opacity", 0)
+      .classed("selected", false);
+  }
+
+  selectEntry(entry, options = {}) {
+    this.selectionActive = true;
+    this.selectedEntry = entry;
+
+    if (options.zoomToEntry) {
+      this.zoomToEntry(entry);
+    } else if (options.zoom !== false) {
+      this.zoomToQuadrant(entry.quadrant);
+    }
+
+    if (options.scrollLegend !== false) {
+      this.scrollLegendToEntry(entry);
+    }
+
+    this.setLinkedHighlight(entry, true);
+    this.showTooltip(entry, { selected: true });
+  }
+
+  updateSelectedTooltip() {
+    if (!this.selectedEntry) return;
+
+    const visible = this.positionTooltip(this.selectedEntry);
+    this.tooltip.style("opacity", visible ? 1 : 0);
+  }
+
+  bindTooltipPositioning() {
+    if (this.tooltipPositioningBound) return;
+
+    this.tooltipPositioningBound = true;
+
+    window.addEventListener("scroll", () => this.updateSelectedTooltip(), { passive: true });
+    window.addEventListener("resize", () => this.updateSelectedTooltip());
+  }
+
+  bindSelectionClearing() {
+    if (this.selectionClearingBound) return;
+
+    this.selectionClearingBound = true;
+
+    document.addEventListener("click", event => {
+      if (!this.selectionActive) return;
+      if (event.target.closest("a")) return;
+
+      this.clearSelection();
+    });
   }
 
   drawMarker(target, entry) {
@@ -460,25 +555,22 @@ class TechRadar {
       .attr("tabindex", 0)
       .attr("transform", d => `translate(${d.x}, ${d.y})`)
       .on("pointerdown", event => event.preventDefault())
-      .on("mousemove", (event, d) => {
-        if (this.searchHighlightActive) return;
-
-        this.showTooltip(event, d);
+      .on("click", (event, d) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.selectEntry(d, { zoom: false });
       });
 
     this.bindHighlightEvents(blips, d => d, {
       scrollLegend: true,
-      onShow: (event, entry) => this.showTooltip(event, entry),
+      onShow: (event, entry) => this.showTooltip(entry),
       onHide: () => this.hideTooltip()
     });
 
     blips.each((d, index, nodes) => {
       const group = d3.select(nodes[index]);
-      const target = d.link
-        ? group.append("a").attr("href", d.link).attr("target", "_blank").attr("rel", "noopener noreferrer")
-        : group;
 
-      this.drawMarker(target, d);
+      this.drawMarker(group, d);
     });
 
     d3.forceSimulation(this.entries)
@@ -490,6 +582,8 @@ class TechRadar {
       .on("tick", () => {
         this.entries.forEach(entry => this.clampToSegment(entry));
         blips.attr("transform", d => `translate(${d.x}, ${d.y})`);
+
+        this.updateSelectedTooltip();
       });
   }
 
@@ -529,6 +623,16 @@ class TechRadar {
             .attr("tabindex", 0);
 
           this.bindHighlightEvents(row, () => item);
+
+          row.on("click", event => {
+            if (event.target.closest("a")) return;
+
+            event.stopPropagation();
+            this.selectEntry(item, {
+              zoomToEntry: true,
+              scrollLegend: false
+            });
+          });
 
           row.append("span")
             .attr("class", "num")
@@ -624,6 +728,8 @@ class TechRadar {
       .extent([[0, 0], [1000, 1000]])
       .on("zoom", event => {
         this.viewport.attr("transform", event.transform);
+
+        this.updateSelectedTooltip();
       });
 
     this.svg.call(this.zoom);
@@ -658,8 +764,21 @@ class TechRadar {
     this.scrollLegendToQuadrant(index);
   }
 
+  zoomToEntry(entry) {
+    const scale = 2;
+    const transform = d3.zoomIdentity
+      .translate(this.width / 2 - entry.x * scale, this.height / 2 - entry.y * scale)
+      .scale(scale);
+
+    this.svg.transition()
+      .duration(500)
+      .call(this.zoom.transform, transform);
+  }
+
   clearSelection() {
-    this.searchHighlightActive = false;
+    this.selectionActive = false;
+    this.selectedEntry = undefined;
+    this.hideTooltip();
 
     this.root.selectAll(".blip")
       .classed("highlight", false)
@@ -763,6 +882,10 @@ class TechRadar {
 
     if (!legendElement || !legendItem) return;
 
+    const legendCanScroll = legendElement.scrollHeight > legendElement.clientHeight;
+
+    if (!legendCanScroll) return;
+
     legendElement.scrollTo({
       top: legendItem.offsetTop - legendElement.offsetTop - 12,
       behavior: "smooth"
@@ -774,18 +897,7 @@ class TechRadar {
 
     if (!entry) return;
 
-    clearTimeout(this.searchTimeout);
-
-    this.searchHighlightActive = true;
-    this.hideTooltip();
-
-    this.zoomToQuadrant(entry.quadrant);
-    this.scrollLegendToEntry(entry);
-    this.setLinkedHighlight(entry, true);
-
-    this.searchTimeout = setTimeout(() => {
-      this.clearSearch();
-    }, 2000);
+    this.selectEntry(entry);
   }
 }
 
