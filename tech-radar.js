@@ -113,6 +113,8 @@ class TechRadar {
     if (title) title.textContent = this.config.title;
     if (caption) caption.textContent = this.config.caption;
     if (date) date.textContent = this.config.date;
+
+    document.title = `${this.config.title} | Tech Radar`;
   }
 
   getSystemTheme() {

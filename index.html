@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Engineering Tech Radar</title>
+  <title>Tech Radar</title>
   <link rel="stylesheet" href="tech-radar.css" />
   <script src="lib/d3.v7.9.0.min.js"></script>
   <script src="tech-radar.js"></script>
@@ -96,7 +96,7 @@
       registry.radars.forEach(radar => {
         const option = document.createElement("option");
         option.value = radar.id;
-        option.textContent = radar.name;
+        option.textContent = radar.label;
         selector.appendChild(option);
       });
     }

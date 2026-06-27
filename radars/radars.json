@@ -3,17 +3,17 @@
   "radars": [
     {
       "id": "architecture",
-      "name": "Architecture",
+      "label": "Architecture",
       "file": "architecture.json"
     },
     {
       "id": "engineering",
-      "name": "Engineering",
+      "label": "Engineering",
       "file": "engineering.json"
     },
     {
       "id": "enterprise",
-      "name": "Enterprise",
+      "label": "Enterprise",
       "file": "enterprise.json"
     }
   ]
