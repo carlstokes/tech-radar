@@ -436,10 +436,14 @@ class TechRadar {
     }
 
     const box = blip.getBoundingClientRect();
+    const blipCentre = {
+      x: box.left + box.width / 2,
+      y: box.top + box.height / 2
+    };
 
     this.tooltip
-      .style("left", `${box.left + box.width + 12}px`)
-      .style("top", `${box.top + box.height / 2}px`);
+      .style("left", `${blipCentre.x + 18}px`)
+      .style("top", `${blipCentre.y}px`);
 
     return true;
   }
@@ -474,21 +478,34 @@ class TechRadar {
       .classed("selected", false);
   }
 
+  shouldZoomToEntry(entry) {
+    const transform = d3.zoomTransform(this.element("svgId"));
+
+    if (transform.k === 1) {
+      return false;
+    }
+
+    return !this.isBlipVisible(entry);
+  }
+
   selectEntry(entry, options = {}) {
     this.selectionActive = true;
     this.selectedEntry = entry;
 
-    if (options.zoomToEntry) {
-      this.zoomToEntry(entry);
-    } else if (options.zoom !== false) {
-      this.zoomToQuadrant(entry.quadrant);
-    }
+    const shouldZoom = options.zoom ?? this.shouldZoomToEntry(entry);
 
-    if (options.scrollLegend !== false) {
+    if (options.scrollLegend ?? true) {
       this.scrollLegendToEntry(entry);
     }
 
     this.setLinkedHighlight(entry, true);
+
+    if (shouldZoom) {
+      this.hideTooltip();
+      this.zoomToEntry(entry, () => this.showTooltip(entry, { selected: true }));
+      return;
+    }
+
     this.showTooltip(entry, { selected: true });
   }
 
@@ -566,7 +583,7 @@ class TechRadar {
       .on("click", (event, d) => {
         event.preventDefault();
         event.stopPropagation();
-        this.selectEntry(d, { zoom: false });
+        this.selectEntry(d);
       });
 
     this.bindHighlightEvents(blips, d => d, {
@@ -636,10 +653,7 @@ class TechRadar {
             if (event.target.closest("a")) return;
 
             event.stopPropagation();
-            this.selectEntry(item, {
-              zoomToEntry: true,
-              scrollLegend: false
-            });
+            this.selectEntry(item, { scrollLegend: false });
           });
 
           row.append("span")
@@ -772,15 +786,19 @@ class TechRadar {
     this.scrollLegendToQuadrant(index);
   }
 
-  zoomToEntry(entry) {
+  zoomToEntry(entry, onComplete) {
     const scale = 2;
     const transform = d3.zoomIdentity
       .translate(this.width / 2 - entry.x * scale, this.height / 2 - entry.y * scale)
       .scale(scale);
 
-    this.svg.transition()
+    const transition = this.svg.transition()
       .duration(500)
       .call(this.zoom.transform, transform);
+
+    if (onComplete) {
+      transition.on("end", onComplete);
+    }
   }
 
   clearSelection() {
@@ -826,9 +844,13 @@ class TechRadar {
       button.addEventListener("click", () => {
         const value = button.getAttribute("data-zoom");
 
-        value === "all"
-          ? this.resetZoom()
-          : this.zoomToQuadrant(Number(value));
+        if(value === "all") {
+          this.resetZoom();
+          return;
+        }
+
+        this.clearSelection();
+        this.zoomToQuadrant(Number(value));
       });
     });
 
