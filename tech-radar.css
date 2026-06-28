@@ -18,6 +18,7 @@
   color-scheme: light;
 }
 
+:root[data-theme="dark"],
 body[data-theme="dark"] {
   --bg: #111318;
   --text: #f1f3f5;
@@ -36,6 +37,24 @@ body[data-theme="dark"] {
   --ring-3: #ffaaa5;
   --blip-text: #111111;
   color-scheme: dark;
+}
+
+
+:root.theme-ready body,
+:root.theme-ready .app-header,
+:root.theme-ready #radar-wrap,
+:root.theme-ready #radar-sidebar,
+:root.theme-ready .sidebar-panel,
+:root.theme-ready #guidance-panel,
+:root.theme-ready #legend,
+:root.theme-ready button,
+:root.theme-ready select,
+:root.theme-ready .search-control,
+:root.theme-ready .tooltip {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
 }
 
 /* Base */
@@ -537,13 +556,21 @@ body[data-show-sidebar="false"] #radar-sidebar,
 body[data-show-guidance="false"] #guidance-panel {
   display: none !important;
 }
-
-body[data-show-sidebar="false"] #radar-wrap {
-  width: min(calc(100vh - 190px), calc(100vw - 56px));
+body[data-show-radar-selector="false"] .radar-selector-label {
+  display: none !important;
 }
 
-.is-hidden {
-  display: none !important;
+body[data-show-title="false"] .app-header {
+  grid-template-columns: 1fr;
+}
+
+body[data-show-title="false"] #controls {
+  width: 100%;
+  justify-content: center;
+}
+
+body[data-show-title="false"][data-show-controls="false"] .app-header {
+  display: none;
 }
 
 /* Responsive layout */
@@ -643,4 +670,13 @@ body[data-show-sidebar="false"] #radar-wrap {
     width: auto;
     align-self: flex-end;
   }
+}
+/* Radar switching */
+body[data-radar-loading="true"] #radar-layout {
+  cursor: progress;
+}
+
+body[data-radar-loading="true"] #radar-selector {
+  cursor: progress;
+  opacity: 0.75;
 }

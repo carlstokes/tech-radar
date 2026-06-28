@@ -5,6 +5,31 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tech Radar</title>
+  <script>
+    (function () {
+      const storageKey = "tech-radar-theme";
+      const params = new URLSearchParams(window.location.search);
+      const requestedTheme = params.get("theme");
+      const systemTheme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+
+      let storedTheme;
+
+      try {
+        storedTheme = localStorage.getItem(storageKey);
+      } catch {
+        storedTheme = undefined;
+      }
+
+      const theme = requestedTheme === "light" || requestedTheme === "dark"
+        ? requestedTheme
+        : storedTheme || systemTheme;
+
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+    }());
+  </script>
   <link rel="stylesheet" href="tech-radar.css" />
   <script src="lib/d3.v7.9.0.min.js"></script>
   <script src="tech-radar.js"></script>
@@ -31,8 +56,7 @@
       <div class="control-group search-group">
         <label class="search-label" for="radar-search">Search</label>
         <div class="search-control">
-          <span aria-hidden="true" class="search-icon">⌕</span>
-          <input id="radar-search" list="radar-search-options" type="search" placeholder="Find an entry..."
+          <input id="radar-search" list="radar-search-options" type="search" placeholder="Search radar..."
             autocomplete="off" />
           <datalist id="radar-search-options"></datalist>
         </div>
@@ -80,11 +104,16 @@
     const params = new URLSearchParams(window.location.search);
     const selector = document.getElementById("radar-selector");
 
+    let radarRegistry;
+    let currentRadar;
+    let activeRadarId;
+
     const displayOptions = {
       sidebar: params.get("sidebar") !== "false",
       guidance: params.get("guidance") !== "false",
       controls: params.get("controls") !== "false",
       title: params.get("title") !== "false",
+      radarSelector: params.get("radarSelector") !== "false",
       theme: params.get("theme") || "system"
     };
 
@@ -122,6 +151,15 @@
       return registry.radars.find(radar => radar.id === id);
     }
 
+    function getSelectedRadarId(registry) {
+      const currentParams = new URLSearchParams(window.location.search);
+      const requestedRadar = currentParams.get("radar") || registry.default;
+
+      return getRadarDefinition(registry, requestedRadar)
+        ? requestedRadar
+        : registry.default;
+    }
+
     function buildRadarSelector(registry) {
       selector.innerHTML = "";
 
@@ -133,7 +171,7 @@
       });
     }
 
-    async function loadRadar(registry, id) {
+    async function fetchRadarData(registry, id) {
       const radarDefinition = getRadarDefinition(registry, id);
 
       if (!radarDefinition) {
@@ -146,28 +184,62 @@
         throw new Error(`Could not load radar config: ${id}`);
       }
 
-      const radarData = await response.json();
-      new TechRadar(radarData, radarOptions).render();
+      return response.json();
+    }
+
+    async function loadRadar(registry, id) {
+      const radarData = await fetchRadarData(registry, id);
+
+      currentRadar?.destroy();
+      currentRadar = new TechRadar(radarData, radarOptions).render();
+      activeRadarId = id;
+      selector.value = id;
+    }
+
+    async function switchRadar(id, updateUrl = true) {
+      if (!id || id === activeRadarId) return;
+
+      document.body.dataset.radarLoading = "true";
+      selector.disabled = true;
+
+      try {
+        await loadRadar(radarRegistry, id);
+
+        if (updateUrl) {
+          const url = new URL(window.location.href);
+          url.searchParams.set("radar", id);
+          window.history.pushState({}, "", url);
+        }
+      } catch (error) {
+        console.error(error);
+        selector.value = activeRadarId || selector.value;
+
+        if (!currentRadar) {
+          document.getElementById("legend").textContent =
+            "Unable to load radar configuration.";
+        }
+      } finally {
+        selector.disabled = false;
+        delete document.body.dataset.radarLoading;
+      }
     }
 
     async function initialise() {
-      const registry = await loadRadarRegistry();
+      radarRegistry = await loadRadarRegistry();
+      const selectedRadar = getSelectedRadarId(radarRegistry);
 
-      const requestedRadar = params.get("radar") || registry.default;
-      const selectedRadar = getRadarDefinition(registry, requestedRadar)
-        ? requestedRadar
-        : registry.default;
-
-      buildRadarSelector(registry);
+      buildRadarSelector(radarRegistry);
       selector.value = selectedRadar;
 
       selector.addEventListener("change", event => {
-        const url = new URL(window.location.href);
-        url.searchParams.set("radar", event.target.value);
-        window.location.href = url.toString();
+        switchRadar(event.target.value);
       });
 
-      await loadRadar(registry, selectedRadar);
+      window.addEventListener("popstate", () => {
+        switchRadar(getSelectedRadarId(radarRegistry), false);
+      });
+
+      await loadRadar(radarRegistry, selectedRadar);
     }
 
     initialise().catch(error => {

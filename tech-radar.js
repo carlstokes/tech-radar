@@ -22,6 +22,7 @@ const DEFAULT_DISPLAY_OPTIONS = {
   guidance: true,
   controls: true,
   title: true,
+  radarSelector: true,
   theme: "system"
 };
 
@@ -29,6 +30,7 @@ class TechRadar {
   constructor(config, options = {}) {
     this.selectionActive = false;
     this.selectedEntry = undefined;
+    this.abortController = new AbortController();
 
     this.config = config;
     this.elements = { ...DEFAULT_ELEMENTS, ...(options.elements || {}) };
@@ -124,14 +126,33 @@ class TechRadar {
   }
 
   getInitialTheme() {
-    return localStorage.getItem(THEME_STORAGE_KEY) || this.getSystemTheme();
+    const rootTheme = document.documentElement.dataset.theme;
+
+    if (rootTheme === "light" || rootTheme === "dark") {
+      return rootTheme;
+    }
+
+    try {
+      return localStorage.getItem(THEME_STORAGE_KEY) || this.getSystemTheme();
+    } catch {
+      return this.getSystemTheme();
+    }
   }
 
   applyTheme(theme, persist = false) {
-    document.body.dataset.theme = theme;
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+
+    if (document.body) {
+      document.body.dataset.theme = theme;
+    }
 
     if (persist) {
-      localStorage.setItem(THEME_STORAGE_KEY, theme);
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, theme);
+      } catch {
+        // Ignore storage errors. The current page can still use the selected theme.
+      }
     }
 
     const toggle = this.element("themeToggleId");
@@ -148,17 +169,46 @@ class TechRadar {
   applyInitialTheme() {
     if (this.display.theme === "light" || this.display.theme === "dark") {
       this.applyTheme(this.display.theme);
+      this.enableThemeTransitions();
       return;
     }
 
     this.applyTheme(this.getInitialTheme());
+    this.enableThemeTransitions();
 
-    window.matchMedia("(prefers-color-scheme: dark)").onchange = event => {
-      if (!localStorage.getItem(THEME_STORAGE_KEY)) {
-        this.applyTheme(event.matches ? "dark" : "light");
-        this.refreshThemeColours();
+    const themePreference = window.matchMedia("(prefers-color-scheme: dark)");
+    const syncSystemTheme = event => {
+      try {
+        if (localStorage.getItem(THEME_STORAGE_KEY)) return;
+      } catch {
+        // If storage is unavailable, continue to follow the system theme.
       }
+
+      this.applyTheme(event.matches ? "dark" : "light");
+      this.refreshThemeColours();
     };
+
+    if (themePreference.addEventListener) {
+      themePreference.addEventListener("change", syncSystemTheme, {
+        signal: this.abortController.signal
+      });
+    } else if (themePreference.addListener) {
+      themePreference.addListener(syncSystemTheme);
+
+      this.abortController.signal.addEventListener("abort", () => {
+        themePreference.removeListener(syncSystemTheme);
+      }, { once: true });
+    }
+  }
+
+  enableThemeTransitions() {
+    if (this.themeTransitionsEnabled) return;
+
+    this.themeTransitionsEnabled = true;
+
+    requestAnimationFrame(() => {
+      document.documentElement.classList.add("theme-ready");
+    });
   }
 
   applyDisplayOptions() {
@@ -166,10 +216,11 @@ class TechRadar {
     document.body.dataset.showControls = String(this.display.controls);
     document.body.dataset.showSidebar = String(this.display.sidebar);
     document.body.dataset.showGuidance = String(this.display.guidance);
+    document.body.dataset.showRadarSelector = String(this.display.radarSelector);
   }
 
   cssVar(name) {
-    return getComputedStyle(document.body).getPropertyValue(name).trim();
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
   ringColour(index) {
@@ -530,8 +581,13 @@ class TechRadar {
 
     this.tooltipPositioningBound = true;
 
-    window.addEventListener("scroll", () => this.updateSelectedTooltip(), { passive: true });
-    window.addEventListener("resize", () => this.updateSelectedTooltip());
+    window.addEventListener("scroll", () => this.updateSelectedTooltip(), {
+      passive: true,
+      signal: this.abortController.signal
+    });
+    window.addEventListener("resize", () => this.updateSelectedTooltip(), {
+      signal: this.abortController.signal
+    });
   }
 
   bindSelectionClearing() {
@@ -552,7 +608,7 @@ class TechRadar {
       if (target.closest("a, button, input, select, textarea")) return;
 
       this.clearSelection();
-    });
+    }, { signal: this.abortController.signal });
   }
 
   drawMarker(target, entry) {
@@ -607,7 +663,7 @@ class TechRadar {
       this.drawMarker(group, d);
     });
 
-    d3.forceSimulation(this.entries)
+    this.simulation = d3.forceSimulation(this.entries)
       .force("x", d3.forceX(d => d.initialX).strength(0.13))
       .force("y", d3.forceY(d => d.initialY).strength(0.13))
       .force("collide", d3.forceCollide(14).strength(0.95))
@@ -853,34 +909,34 @@ class TechRadar {
       button.addEventListener("click", () => {
         const value = button.getAttribute("data-zoom");
 
-        if(value === "all") {
+        if (value === "all") {
           this.resetZoom();
           return;
         }
 
         this.clearSelection();
         this.zoomToQuadrant(Number(value));
-      });
+      }, { signal: this.abortController.signal });
     });
 
     this.element("themeToggleId")?.addEventListener("click", () => {
       const nextTheme = document.body.dataset.theme === "dark" ? "light" : "dark";
       this.applyTheme(nextTheme, true);
       this.refreshThemeColours();
-    });
+    }, { signal: this.abortController.signal });
 
     const search = this.element("searchId");
 
     search?.addEventListener("change", event => {
       this.goToEntry(event.target.value);
-    });
+    }, { signal: this.abortController.signal });
 
     search?.addEventListener("keydown", event => {
       if (event.key !== "Enter") return;
 
       event.preventDefault();
       this.goToEntry(event.target.value);
-    });
+    }, { signal: this.abortController.signal });
   }
 
   refreshThemeColours() {
@@ -915,8 +971,8 @@ class TechRadar {
 
     list.innerHTML = "";
 
-    this.entries
-      .toSorted((a, b) => a.label.localeCompare(b.label))
+    [...this.entries]
+      .sort((a, b) => a.label.localeCompare(b.label))
       .forEach(entry => {
         const option = document.createElement("option");
         option.value = entry.label;
@@ -953,6 +1009,14 @@ class TechRadar {
       search.value = "";
     }
   }
+  destroy() {
+    this.abortController.abort();
+    this.simulation?.stop();
+    this.svg?.interrupt();
+    this.svg?.on(".zoom", null);
+    this.hideTooltip();
+  }
+
 }
 
 window.TechRadar = TechRadar;
