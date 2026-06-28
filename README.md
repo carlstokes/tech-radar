@@ -69,7 +69,7 @@ The `radars/radars.json` file defines the available radars, the default radar, a
   "radars": [
     {
       "id": "engineering",
-      "name": "Engineering",
+      "label": "Engineering",
       "file": "engineering.json"
     }
   ]
