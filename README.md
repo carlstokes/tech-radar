@@ -119,6 +119,17 @@ Adding a new radar simply requires:
 1. Creating a new radar JSON file.
 2. Adding an entry to `radars.json`.
 
+### Movement
+
+Each entry can include an optional `moved` value to show how it has changed since the previous radar.
+
+| Value | Marker | Meaning |
+|----|:---:|---|
+| omitted or `0` | ● | No movement or movement not specified |
+| `1` | ▲ | Moved in, moved up, or increased confidence |
+| `-1` | ▼ | Moved out, moved down, or reduced confidence |
+| `2` | ★ | New or notable item |
+
 ## Display Options
 The appearance of the radar can be customised using URL query parameters. These are useful when embedding the radar in documentation or presenting a simplified view.
 

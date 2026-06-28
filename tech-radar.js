@@ -806,6 +806,50 @@ class TechRadar {
       row.append("td")
         .text(quadrant.purpose);
     });
+
+     this.config.quadrants.forEach(quadrant => {
+      const row = quadrantsBody.append("tr");
+
+      row.append("td")
+        .attr("class", "guidance-name")
+        .text(quadrant.name);
+
+      row.append("td")
+        .text(quadrant.purpose);
+    });
+
+    const movementSection = grid.append("section");
+
+    movementSection.append("h2")
+      .text("Movement");
+
+    const movementTable = movementSection.append("table");
+
+    movementTable.append("thead")
+      .append("tr")
+      .selectAll("th")
+      .data(["Marker", "Meaning"])
+      .enter()
+      .append("th")
+      .text(d => d);
+
+    const movementBody = movementTable.append("tbody");
+
+    [
+      { marker: "●", meaning: "No movement or movement not specified." },
+      { marker: "▲", meaning: "Moved in, moved up, or increased confidence since the previous radar." },
+      { marker: "▼", meaning: "Moved out, moved down, or reduced confidence since the previous radar." },
+      { marker: "★", meaning: "New or notable item added to this radar." }
+    ].forEach(item => {
+      const row = movementBody.append("tr");
+
+      row.append("td")
+        .attr("class", "guidance-name")
+        .text(item.marker);
+
+      row.append("td")
+        .text(item.meaning);
+    });
   }
 
   configureZoom() {
