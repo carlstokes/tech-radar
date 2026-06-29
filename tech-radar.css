@@ -253,6 +253,37 @@ h1 {
   font-size: 18px;
 }
 
+
+.quadrant-radar-icon {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  overflow: visible;
+}
+
+.quadrant-radar-icon-ring,
+.quadrant-radar-icon-axis {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.quadrant-radar-icon-ring {
+  opacity: 0.9;
+}
+
+.quadrant-radar-icon-axis {
+  opacity: 0.7;
+}
+
+.quadrant-radar-icon-centre {
+  fill: currentColor;
+  stroke: none;
+  opacity: 0.85;
+}
+
 .reset-button {
   min-width: 42px;
 }
@@ -553,6 +584,7 @@ svg:active {
 body[data-show-title="false"] #title-container,
 body[data-show-controls="false"] #controls,
 body[data-show-sidebar="false"] #radar-sidebar,
+body[data-show-entries="false"] #entries-panel,
 body[data-show-guidance="false"] #guidance-panel {
   display: none !important;
 }

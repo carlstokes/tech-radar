@@ -136,7 +136,8 @@ The appearance of the radar can be customised using URL query parameters. These 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `radar` | Default radar | Selects the radar to display. |
-| `sidebar` | `true` | Shows or hides the legend. |
+| `sidebar` | `true` | Shows or hides the full sidebar. |
+| `entries` | `true` | Shows or hides the entries section. |
 | `guidance` | `true` | Shows or hides the guidance section. |
 | `controls` | `true` | Shows or hides the toolbar. |
 | `title` | `true` | Shows or hides the radar title, caption and date. |

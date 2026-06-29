@@ -19,6 +19,7 @@ const DEFAULT_ELEMENTS = {
 
 const DEFAULT_DISPLAY_OPTIONS = {
   sidebar: true,
+  entries: true,
   guidance: true,
   controls: true,
   title: true,
@@ -212,9 +213,12 @@ class TechRadar {
   }
 
   applyDisplayOptions() {
+    const showSidebar = this.display.sidebar && (this.display.entries || this.display.guidance);
+
     document.body.dataset.showTitle = String(this.display.title);
     document.body.dataset.showControls = String(this.display.controls);
-    document.body.dataset.showSidebar = String(this.display.sidebar);
+    document.body.dataset.showSidebar = String(showSidebar);
+    document.body.dataset.showEntries = String(this.display.entries);
     document.body.dataset.showGuidance = String(this.display.guidance);
     document.body.dataset.showRadarSelector = String(this.display.radarSelector);
   }
@@ -343,14 +347,95 @@ class TechRadar {
     return positions[index];
   }
 
+  createQuadrantIcon(index) {
+    const namespace = "http://www.w3.org/2000/svg";
+
+    const svg = document.createElementNS(namespace, "svg");
+    svg.setAttribute("class", "quadrant-radar-icon");
+    svg.setAttribute("viewBox", "0 0 16 16");
+    svg.setAttribute("width", "16");
+    svg.setAttribute("height", "16");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+
+    const icons = [
+      {
+        axes: [
+          [8, 8, 8, 2],
+          [8, 8, 2, 8]
+        ],
+        arcs: [
+          "M 8 2 A 6 6 0 0 0 2 8",
+          "M 8 5 A 3 3 0 0 0 5 8"
+        ]
+      },
+      {
+        axes: [
+          [8, 8, 8, 2],
+          [8, 8, 14, 8]
+        ],
+        arcs: [
+          "M 8 2 A 6 6 0 0 1 14 8",
+          "M 8 5 A 3 3 0 0 1 11 8"
+        ]
+      },
+      {
+        axes: [
+          [8, 8, 2, 8],
+          [8, 8, 8, 14]
+        ],
+        arcs: [
+          "M 2 8 A 6 6 0 0 0 8 14",
+          "M 5 8 A 3 3 0 0 0 8 11"
+        ]
+      },
+      {
+        axes: [
+          [8, 8, 14, 8],
+          [8, 8, 8, 14]
+        ],
+        arcs: [
+          "M 14 8 A 6 6 0 0 1 8 14",
+          "M 11 8 A 3 3 0 0 1 8 11"
+        ]
+      }
+    ];
+
+    const icon = icons[index] || icons[0];
+
+    icon.arcs.forEach(pathData => {
+      const path = document.createElementNS(namespace, "path");
+      path.setAttribute("class", "quadrant-radar-icon-ring");
+      path.setAttribute("d", pathData);
+      svg.appendChild(path);
+    });
+
+    icon.axes.forEach(([x1, y1, x2, y2]) => {
+      const line = document.createElementNS(namespace, "line");
+      line.setAttribute("class", "quadrant-radar-icon-axis");
+      line.setAttribute("x1", x1);
+      line.setAttribute("y1", y1);
+      line.setAttribute("x2", x2);
+      line.setAttribute("y2", y2);
+      svg.appendChild(line);
+    });
+
+    const centre = document.createElementNS(namespace, "circle");
+    centre.setAttribute("class", "quadrant-radar-icon-centre");
+    centre.setAttribute("cx", "8");
+    centre.setAttribute("cy", "8");
+    centre.setAttribute("r", "1");
+    svg.appendChild(centre);
+
+    return svg;
+  }
+
   buildQuadrantControls() {
     const container = this.element("quadrantControlsId");
 
     if (!container) return;
 
     container.innerHTML = "";
-
-    const quadrantIcons = ["◰", "◳", "◱", "◲"];
 
     this.config.quadrants.forEach((quadrant, index) => {
       const button = document.createElement("button");
@@ -360,7 +445,7 @@ class TechRadar {
       button.dataset.zoom = String(index);
       button.title = `Zoom to ${quadrant.name}`;
       button.setAttribute("aria-label", `Zoom to ${quadrant.name}`);
-      button.textContent = quadrantIcons[index] || String(index + 1);
+      button.appendChild(this.createQuadrantIcon(index));
 
       container.appendChild(button);
     });
@@ -797,17 +882,6 @@ class TechRadar {
     const quadrantsBody = quadrantsTable.append("tbody");
 
     this.config.quadrants.forEach(quadrant => {
-      const row = quadrantsBody.append("tr");
-
-      row.append("td")
-        .attr("class", "guidance-name")
-        .text(quadrant.name);
-
-      row.append("td")
-        .text(quadrant.purpose);
-    });
-
-     this.config.quadrants.forEach(quadrant => {
       const row = quadrantsBody.append("tr");
 
       row.append("td")

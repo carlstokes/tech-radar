@@ -86,7 +86,7 @@
     </section>
 
     <aside id="radar-sidebar">
-      <section class="sidebar-panel">
+      <section id="entries-panel" class="sidebar-panel">
         <header class="sidebar-header">Entries</header>
         <div id="legend"></div>
       </section>
@@ -110,6 +110,7 @@
 
     const displayOptions = {
       sidebar: params.get("sidebar") !== "false",
+      entries: params.get("entries") !== "false",
       guidance: params.get("guidance") !== "false",
       controls: params.get("controls") !== "false",
       title: params.get("title") !== "false",
