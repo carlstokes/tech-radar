@@ -179,7 +179,7 @@
         throw new Error(`Unknown radar: ${id}`);
       }
 
-      const response = await fetch(`radars/${radarDefinition.file}`);
+      const response = await fetch(`${radarDefinition.file}`);
 
       if (!response.ok) {
         throw new Error(`Could not load radar config: ${id}`);

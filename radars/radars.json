@@ -4,17 +4,17 @@
     {
       "id": "architecture",
       "label": "Architecture",
-      "file": "architecture.json"
+      "file": "radars/architecture.json"
     },
     {
       "id": "engineering",
       "label": "Engineering",
-      "file": "engineering.json"
+      "file": "radars/engineering.json"
     },
     {
       "id": "enterprise",
       "label": "Enterprise",
-      "file": "enterprise.json"
+      "file": "radars/enterprise.json"
     }
   ]
 }
