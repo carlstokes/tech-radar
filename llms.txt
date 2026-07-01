@@ -1,0 +1,55 @@
+# Tech Radar
+
+A simple, configurable Technology Radar application for communicating an organisation's technology strategy.
+
+is a lightweight, browser-based implementation written in HTML, CSS, and JavaScript, making it easy to host as a static website using GitHub Pages.
+
+Radar definitions are stored as JSON files in the `radars/` directory.
+
+## Important files
+
+- `README.md`: Project overview, usage and hosting instructions.
+- `radars/radars.json`: Registry of available radars.
+- `radars/*.json`: Individual radar definitions.
+
+## Radar data
+
+Each radar JSON file defines:
+
+- `title`: Display name for the radar.
+- `date`: Radar publication or update date.
+- `caption`: Short description shown under the title.
+- `rings`: The four adoption rings.
+- `quadrants`: The four radar quadrants.
+- `entries`: The items plotted on the radar.
+
+## Index reference
+
+Radar entries use zero-based indexes.
+
+### Quadrants
+
+`quadrant` refers to the position in the `quadrants` array.
+
+- `0` = first configured quadrant
+- `1` = second configured quadrant
+- `2` = third configured quadrant
+- `3` = fourth configured quadrant
+
+### Rings
+
+`ring` refers to the position in the `rings` array.
+
+- `0` = first configured ring
+- `1` = second configured ring
+- `2` = third configured ring
+- `3` = fourth configured ring
+
+### Movement
+
+`moved` controls the marker shape shown for an entry.
+
+- omitted or `0` = no movement or movement not specified
+- `1` = moved in, moved up, or increased confidence
+- `-1` = moved out, moved down, or reduced confidence
+- `2` = new or notable item
