@@ -3,52 +3,233 @@
   "date": "2026.06",
   "caption": "How we build software",
   "quadrants": [
-    { "name": "Practices", "purpose": "How we build software." },
-    { "name": "Developer Experience", "purpose": "Tools and capabilities that improve developer productivity." },
-    { "name": "Application Stack", "purpose": "Languages, frameworks and application-level libraries." },
-    { "name": "Platform Services", "purpose": "Shared services and runtime capabilities." }
+    {
+      "name": "Practices",
+      "purpose": "How we build software."
+    },
+    {
+      "name": "Developer Experience",
+      "purpose": "Tools and capabilities that improve developer productivity."
+    },
+    {
+      "name": "Application Stack",
+      "purpose": "Languages, frameworks and application-level libraries."
+    },
+    {
+      "name": "Platform Services",
+      "purpose": "Shared services and runtime capabilities."
+    }
   ],
   "rings": [
-    { "name": "ADOPT", "description": "Recommended and standard choice for new engineering work." },
-    { "name": "TRIAL", "description": "Encouraged in suitable projects to build organisational experience." },
-    { "name": "ASSESS", "description": "Worth exploring, but not yet recommended for broad use." },
-    { "name": "HOLD", "description": "Avoid for new work unless there is a strong justification." }
+    {
+      "name": "ADOPT",
+      "description": "Recommended and standard choice for new engineering work."
+    },
+    {
+      "name": "TRIAL",
+      "description": "Encouraged in suitable projects to build organisational experience."
+    },
+    {
+      "name": "ASSESS",
+      "description": "Worth exploring, but not yet recommended for broad use."
+    },
+    {
+      "name": "HOLD",
+      "description": "Avoid for new work unless there is a strong justification."
+    }
   ],
   "entries": [
-    { "quadrant": 0, "ring": 0, "label": "Architecture Decision Records", "reason": "Lightweight way to capture important engineering decisions.", "moved": 0 },
-    { "quadrant": 0, "ring": 0, "label": "Contract Testing", "reason": "Helps ensure services conform to published contracts.", "moved": 0 },
-    { "quadrant": 0, "ring": 0, "label": "Local-first Development", "reason": "Engineers should be able to run and test services locally.", "moved": 0 },
-    { "quadrant": 0, "ring": 0, "label": "Observability by Default", "reason": "Services should include logs, metrics and traces from the start.", "moved": 0 },
-    { "quadrant": 0, "ring": 1, "label": "Event-driven Integration", "reason": "Encouraged where loose coupling and asynchronous processing are valuable.", "moved": 1 },
-    { "quadrant": 0, "ring": 1, "label": "Domain-Driven Design", "reason": "Useful for complex business domains when applied pragmatically.", "moved": 0 },
-    { "quadrant": 0, "ring": 2, "label": "AI-assisted Development", "reason": "Promising productivity aid, but usage patterns still need to mature.", "moved": 1 },
-    { "quadrant": 0, "ring": 3, "label": "Manual Deployment Processes", "reason": "New services should use repeatable automated deployment pipelines.", "moved": -1 },
-
-    { "quadrant": 1, "ring": 0, "label": "TypeSpec", "reason": "Preferred approach for contract-first API and schema definition.", "moved": 1, "link": "https://typespec.io/" },
-    { "quadrant": 1, "ring": 0, "label": "OpenAPI", "reason": "Standard format for API documentation and integration contracts.", "moved": 0 },
-    { "quadrant": 1, "ring": 0, "label": "Datadog", "reason": "Standard production observability platform.", "moved": 0 },
-    { "quadrant": 1, "ring": 0, "label": "GitHub Copilot", "reason": "Recommended AI assistant for day-to-day development.", "moved": 0 },
-    { "quadrant": 1, "ring": 1, "label": "Aspire", "reason": "Useful local development and orchestration experience for .NET services.", "moved": 1 },
-    { "quadrant": 1, "ring": 1, "label": "Backstage", "reason": "Candidate for internal developer portal and service catalogue.", "moved": 0 },
-    { "quadrant": 1, "ring": 2, "label": "AI Coding Agents", "reason": "Potentially useful but requires governance and engineering guardrails.", "moved": 1 },
-    { "quadrant": 1, "ring": 3, "label": "Wiki-generated API Documentation", "reason": "Prefer generated documentation from contracts.", "moved": -1 },
-
-    { "quadrant": 2, "ring": 0, "label": "C#", "reason": "Primary language for backend services.", "moved": 0 },
-    { "quadrant": 2, "ring": 0, "label": ".NET", "reason": "Default application platform for new services.", "moved": 0 },
-    { "quadrant": 2, "ring": 0, "label": "FluentValidation", "reason": "Preferred validation library for request and domain validation.", "moved": 0 },
-    { "quadrant": 2, "ring": 1, "label": "FastEndpoints", "reason": "Worth trialling as a structured alternative to minimal APIs.", "moved": 0 },
-    { "quadrant": 2, "ring": 1, "label": "Blazor", "reason": "Suitable for internal operational tools.", "moved": 0 },
-    { "quadrant": 2, "ring": 2, "label": ".NET Aspire Service Defaults", "reason": "Useful conventions still being assessed for wider use.", "moved": 0 },
-    { "quadrant": 2, "ring": 3, "label": "Legacy .NET Framework", "reason": "Avoid for new development.", "moved": -1 },
-
-    { "quadrant": 3, "ring": 0, "label": "Kubernetes (AKS)", "reason": "Preferred platform for strategic containerised workloads.", "moved": 1 },
-    { "quadrant": 3, "ring": 0, "label": "Dapr", "reason": "Recommended runtime for common distributed application patterns.", "moved": 0 },
-    { "quadrant": 3, "ring": 0, "label": "Cosmos DB", "reason": "Recommended document store where relational modelling is not required.", "moved": 0 },
-    { "quadrant": 3, "ring": 0, "label": "Redis", "reason": "Preferred distributed cache for hot read paths.", "moved": 0 },
-    { "quadrant": 3, "ring": 0, "label": "Auth0", "reason": "Standard identity provider for application and API security.", "moved": 0 },
-    { "quadrant": 3, "ring": 1, "label": "Azure Container Apps", "reason": "Useful managed container platform, but not the default for strategic workloads.", "moved": 0 },
-    { "quadrant": 3, "ring": 2, "label": "Vector Databases", "reason": "Assess for AI and semantic search use cases.", "moved": 1 },
-    { "quadrant": 3, "ring": 3, "label": "Azure Functions", "reason": "Avoid for new strategic services where containerised workloads are a better fit.", "moved": -1 },
-    { "quadrant": 3, "ring": 3, "label": "Shared SQL Databases", "reason": "Avoid service coupling through shared persistence.", "moved": -1 }
+    {
+      "quadrant": 0,
+      "ring": 0,
+      "label": "Continuous Delivery",
+      "reason": "Deliver software in small, frequent, reliable releases.",
+      "link": "https://continuousdelivery.com/",
+      "moved": 0
+    },
+    {
+      "quadrant": 0,
+      "ring": 0,
+      "label": "Local Development",
+      "reason": "Develop and test software locally using containerised dependencies and supporting tooling.",
+      "link": "https://12factor.net/dev-prod-parity",
+      "moved": 0
+    },
+    {
+      "quadrant": 0,
+      "ring": 0,
+      "label": "Architecture Decision Records",
+      "reason": "Lightweight way to capture important engineering decisions.",
+      "link": "https://adr.github.io/",
+      "moved": 2
+    },
+    {
+      "quadrant": 0,
+      "ring": 0,
+      "label": "Contract-first Development",
+      "reason": "Define contracts before implementation to improve consistency and collaboration.",
+      "link": "https://typespec.io/",
+      "moved": 2
+    },
+    {
+      "quadrant": 1,
+      "ring": 0,
+      "label": "Azure DevOps",
+      "reason": "Standard engineering platform for source control, planning and delivery.",
+      "link": "https://learn.microsoft.com/azure/devops/",
+      "moved": 0
+    },
+    {
+      "quadrant": 1,
+      "ring": 1,
+      "label": "TypeSpec",
+      "reason": "Contract-first API definitions with generated OpenAPI and documentation.",
+      "link": "https://typespec.io/",
+      "moved": 2
+    },
+    {
+      "quadrant": 1,
+      "ring": 0,
+      "label": "LaunchDarkly",
+      "reason": "Standard feature management platform for progressive delivery.",
+      "link": "https://launchdarkly.com/docs",
+      "moved": 0
+    },
+    {
+      "quadrant": 1,
+      "ring": 2,
+      "label": "Scalar",
+      "reason": "Interactive API reference generated from OpenAPI specifications.",
+      "link": "https://guides.scalar.com/scalar/introduction",
+      "moved": 2
+    },
+    {
+      "quadrant": 1,
+      "ring": 2,
+      "label": "GitHub Copilot",
+      "reason": "AI-assisted software development.",
+      "link": "https://docs.github.com/copilot",
+      "moved": 2
+    },
+    {
+      "quadrant": 1,
+      "ring": 2,
+      "label": ".NET Aspire",
+      "reason": "Improve local development, orchestration and observability.",
+      "link": "https://learn.microsoft.com/dotnet/aspire/",
+      "moved": 2
+    },
+    {
+      "quadrant": 2,
+      "ring": 0,
+      "label": ".NET",
+      "reason": "Primary application platform for backend services.",
+      "link": "https://dotnet.microsoft.com/",
+      "moved": 0
+    },
+    {
+      "quadrant": 2,
+      "ring": 0,
+      "label": "Kotlin Multiplatform",
+      "reason": "Preferred approach for developing cross-platform mobile applications.",
+      "link": "https://www.jetbrains.com/kotlin-multiplatform/",
+      "moved": 0
+    },
+    {
+      "quadrant": 2,
+      "ring": 0,
+      "label": "Sitecore",
+      "reason": "Strategic content management platform for digital experiences.",
+      "link": "https://doc.sitecore.com/",
+      "moved": 0
+    },
+    {
+      "quadrant": 3,
+      "ring": 0,
+      "label": "Containers",
+      "reason": "Standard packaging and deployment model for workloads.",
+      "link": "https://www.docker.com/resources/what-container/",
+      "moved": 2
+    },
+    {
+      "quadrant": 3,
+      "ring": 0,
+      "label": "Azure Kubernetes Service",
+      "reason": "Standard for running containerised workloads at scale.",
+      "link": "https://learn.microsoft.com/azure/aks/",
+      "moved": 2
+    },
+    {
+      "quadrant": 3,
+      "ring": 1,
+      "label": "Azure Container Apps",
+      "reason": "Managed container platform for cloud-native workloads.",
+      "link": "https://learn.microsoft.com/azure/container-apps/",
+      "moved": 2
+    },
+    {
+      "quadrant": 3,
+      "ring": 0,
+      "label": "Azure Functions",
+      "reason": "Suitable for specific serverless and event-driven scenarios.",
+      "link": "https://learn.microsoft.com/azure/azure-functions/",
+      "moved": 0
+    },
+    {
+      "quadrant": 3,
+      "ring": 0,
+      "label": "Cosmos DB",
+      "reason": "Strategic operational data store for cloud-native services.",
+      "link": "https://learn.microsoft.com/azure/cosmos-db/",
+      "moved": 0
+    },
+    {
+      "quadrant": 3,
+      "ring": 1,
+      "label": "Dapr",
+      "reason": "Portable application building blocks for distributed systems.",
+      "link": "https://docs.dapr.io/",
+      "moved": 2
+    },
+    {
+      "quadrant": 3,
+      "ring": 2,
+      "label": "Blazor",
+      "reason": "Framework for engineering and operational web interfaces.",
+      "link": "https://learn.microsoft.com/aspnet/core/blazor/",
+      "moved": 0
+    },
+    {
+      "quadrant": 3,
+      "ring": 0,
+      "label": "Auth0",
+      "reason": "Standard identity platform for applications and APIs.",
+      "link": "https://auth0.com/docs",
+      "moved": 0
+    },
+    {
+      "quadrant": 3,
+      "ring": 0,
+      "label": "Azure Service Bus",
+      "reason": "Standard messaging platform for asynchronous integration.",
+      "link": "https://learn.microsoft.com/azure/service-bus-messaging/",
+      "moved": 0
+    },
+    {
+      "quadrant": 3,
+      "ring": 0,
+      "label": "Azure Event Grid",
+      "reason": "Standard for publishing integration events.",
+      "link": "https://learn.microsoft.com/azure/event-grid/",
+      "moved": 0
+    },
+    {
+      "quadrant": 3,
+      "ring": 0,
+      "label": "Redis",
+      "reason": "Distributed caching for performance-critical workloads.",
+      "link": "https://redis.io/docs/",
+      "moved": 2
+    }
   ]
 }
