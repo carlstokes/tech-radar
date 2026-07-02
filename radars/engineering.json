@@ -270,6 +270,14 @@
       "reason": "Distributed caching for performance-critical workloads.",
       "link": "https://redis.io/docs/",
       "moved": 2
+    },
+    {
+      "quadrant": 3,
+      "ring": 3,
+      "label": "Azure API Management",
+      "reason": "Not the default choice for internal APIs. Introduce only where gateway capabilities provide clear business value.",
+      "link": "https://learn.microsoft.com/azure/api-management/",
+      "moved": 2
     }
   ]
 }
