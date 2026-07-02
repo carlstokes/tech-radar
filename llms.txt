@@ -1,55 +1,77 @@
 # Tech Radar
 
-A simple, configurable Technology Radar application for communicating an organisation's technology strategy.
+A simple, configurable Technology Radar for communicating an organisation's technology strategy.
 
-is a lightweight, browser-based implementation written in HTML, CSS, and JavaScript, making it easy to host as a static website using GitHub Pages.
-
-Radar definitions are stored as JSON files in the `radars/` directory.
+The application is a static website implemented in HTML, CSS and JavaScript. Radar content is defined entirely by JSON files in the `radars/` directory.
 
 ## Important files
 
-- `README.md`: Project overview, usage and hosting instructions.
-- `radars/radars.json`: Registry of available radars.
-- `radars/*.json`: Individual radar definitions.
+- `README.md` — Project overview and hosting instructions.
+- `radars/radars.json` — Registry of available radars.
+- `radars/*.json` — Individual radar definitions.
 
-## Radar data
+## Retrieval
 
-Each radar JSON file defines:
+When answering questions about the radar:
 
-- `title`: Display name for the radar.
-- `date`: Radar publication or update date.
-- `caption`: Short description shown under the title.
-- `rings`: The four adoption rings.
-- `quadrants`: The four radar quadrants.
-- `entries`: The items plotted on the radar.
+1. Read `radars/radars.json`.
+2. Locate the requested radar.
+3. Load the corresponding radar JSON file.
+4. Resolve `quadrant` and `ring` indexes using the radar's `quadrants` and `rings` arrays.
+5. Present human-readable names rather than numeric indexes.
+6. Answer only from the radar data. Do not invent, infer, or summarise entries that are not present.
 
-## Index reference
+The radar JSON files are the authoritative source for all radar content.
 
-Radar entries use zero-based indexes.
+## Radar schema
 
-### Quadrants
+Each radar contains:
 
-`quadrant` refers to the position in the `quadrants` array.
+- `title`
+- `date`
+- `caption`
+- `quadrants` *(exactly four)*
+- `rings` *(exactly four)*
+- `entries` *(one or more)*
 
-- `0` = first configured quadrant
-- `1` = second configured quadrant
-- `2` = third configured quadrant
-- `3` = fourth configured quadrant
+The application assumes every radar contains exactly four quadrants and four rings. Consumers should not expect these dimensions to vary.
 
-### Rings
+Each entry contains:
 
-`ring` refers to the position in the `rings` array.
+- `label`
+- `quadrant`
+- `ring`
+- `reason`
+- `moved` *(optional)*
+- Any additional custom properties defined by the radar.
 
-- `0` = first configured ring
-- `1` = second configured ring
-- `2` = third configured ring
-- `3` = fourth configured ring
+Consumers should ignore unknown properties unless explicitly asked about them.
 
-### Movement
+## Index mapping
 
-`moved` controls the marker shape shown for an entry.
+`quadrant` and `ring` are zero-based indexes into the `quadrants` and `rings` arrays.
 
-- omitted or `0` = no movement or movement not specified
-- `1` = moved in, moved up, or increased confidence
-- `-1` = moved out, moved down, or reduced confidence
-- `2` = new or notable item
+Examples:
+
+- `quadrant: 0` → First configured quadrant
+- `quadrant: 1` → Second configured quadrant
+- `quadrant: 2` → Third configured quadrant
+- `quadrant: 3` → Fourth configured quadrant
+
+- `ring: 0` → First configured ring
+- `ring: 1` → Second configured ring
+- `ring: 2` → Third configured ring
+- `ring: 3` → Fourth configured ring
+
+Always resolve indexes before presenting answers.
+
+## Movement
+
+`moved` controls the marker displayed on the radar.
+
+| Value | Meaning |
+|------:|---------|
+| *(omitted)* or `0` | Unchanged or not specified |
+| `1` | Moved in or increased confidence |
+| `-1` | Moved out or reduced confidence |
+| `2` | New or notable item |
