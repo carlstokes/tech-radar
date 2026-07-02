@@ -16,7 +16,7 @@
       "purpose": "Languages, frameworks and application-level libraries."
     },
     {
-      "name": "Platform Services",
+      "name": "Platform",
       "purpose": "Shared services and runtime capabilities."
     }
   ],
@@ -49,9 +49,9 @@
     },
     {
       "quadrant": 0,
-      "ring": 0,
+      "ring": 2,
       "label": "Local Development",
-      "reason": "Develop and test software locally using containerised dependencies and supporting tooling.",
+      "reason": "Develop, test and observe software locally using production-like environments, containerised dependencies and realistic telemetry.",
       "link": "https://12factor.net/dev-prod-parity",
       "moved": 0
     },
@@ -120,11 +120,43 @@
       "moved": 2
     },
     {
+      "quadrant": 1,
+      "ring": 0,
+      "label": "Postman",
+      "reason": "Standard tool for exploring, testing and validating HTTP APIs.",
+      "link": "https://www.postman.com/",
+      "moved": 0
+    },
+    {
+      "quadrant": 1,
+      "ring": 2,
+      "label": "Testcontainers",
+      "reason": "Run realistic integration tests using disposable containerised dependencies.",
+      "link": "https://testcontainers.com/",
+      "moved": 2
+    },
+    {
       "quadrant": 2,
       "ring": 0,
       "label": ".NET",
       "reason": "Primary application platform for backend services.",
       "link": "https://dotnet.microsoft.com/",
+      "moved": 0
+    },
+    {
+      "quadrant": 2,
+      "ring": 0,
+      "label": "Jetpack Compose",
+      "reason": "Standard UI toolkit for Android application development.",
+      "link": "https://developer.android.com/compose",
+      "moved": 0
+    },
+    {
+      "quadrant": 2,
+      "ring": 0,
+      "label": "SwiftUI",
+      "reason": "Standard UI framework for iOS application development.",
+      "link": "https://developer.apple.com/swiftui/",
       "moved": 0
     },
     {
@@ -141,6 +173,14 @@
       "label": "Sitecore",
       "reason": "Strategic content management platform for digital experiences.",
       "link": "https://doc.sitecore.com/",
+      "moved": 0
+    },
+    {
+      "quadrant": 3,
+      "ring": 0,
+      "label": "Datadog",
+      "reason": "Standard observability platform for monitoring, logging and tracing.",
+      "link": "https://www.datadoghq.com/",
       "moved": 0
     },
     {
