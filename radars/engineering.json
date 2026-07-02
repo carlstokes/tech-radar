@@ -45,7 +45,7 @@
       "label": "Continuous Delivery",
       "reason": "Deliver software in small, frequent, reliable releases.",
       "link": "https://continuousdelivery.com/",
-      "moved": 0
+      "moved": 2
     },
     {
       "quadrant": 0,
@@ -53,7 +53,7 @@
       "label": "Local Development",
       "reason": "Develop, test and observe software locally using production-like environments, containerised dependencies and realistic telemetry.",
       "link": "https://12factor.net/dev-prod-parity",
-      "moved": 0
+      "moved": 2
     },
     {
       "quadrant": 0,
