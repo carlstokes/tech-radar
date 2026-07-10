@@ -73,9 +73,16 @@
         </button>
       </div>
 
+      <div class="control-group ohno-controls" aria-label="Oh No controls">
+        <button id="ohno-button" class="icon-button ohno-button" type="button"
+          title="Oh No!" aria-label="Oh No!">
+          <span aria-hidden="true">☠︎</span>
+        </button>
+      </div>
+
       <div class="control-group appearance-controls" aria-label="Appearance controls">
-        <button id="theme-toggle" class="icon-button" type="button" aria-pressed="false" title="Toggle theme"
-          aria-label="Toggle theme">🌙</button>
+        <button id="theme-toggle" class="icon-button theme-toggle-button" type="button" aria-pressed="false" title="Toggle theme"
+          aria-label="Toggle theme">☾</button>
       </div>
     </div>
   </header>
@@ -115,6 +122,7 @@
       controls: params.get("controls") !== "false",
       title: params.get("title") !== "false",
       radarSelector: params.get("radarSelector") !== "false",
+      ohno: params.get("ohno") !== "false",
       theme: params.get("theme") || "system"
     };
 
@@ -131,6 +139,7 @@
         controlsId: "controls",
         mainId: "radar-layout",
         themeToggleId: "theme-toggle",
+        ohNoButtonId: "ohno-button",
         quadrantControlsId: "quadrant-controls",
         searchId: "radar-search",
         searchOptionsId: "radar-search-options"

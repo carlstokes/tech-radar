@@ -12,6 +12,7 @@ const DEFAULT_ELEMENTS = {
   controlsId: "controls",
   mainId: "radar-layout",
   themeToggleId: "theme-toggle",
+  ohNoButtonId: "ohno-button",
   quadrantControlsId: "quadrant-controls",
   searchId: "search",
   searchOptionsId: "search-options"
@@ -24,6 +25,7 @@ const DEFAULT_DISPLAY_OPTIONS = {
   controls: true,
   title: true,
   radarSelector: true,
+  ohno: true,
   theme: "system"
 };
 
@@ -32,9 +34,12 @@ class TechRadar {
     this.selectionActive = false;
     this.selectedEntry = undefined;
     this.abortController = new AbortController();
+    this.lemmingTimers = [];
+    this.lemmingActive = false;
 
     this.config = config;
     this.elements = { ...DEFAULT_ELEMENTS, ...(options.elements || {}) };
+
     this.display = { ...DEFAULT_DISPLAY_OPTIONS, ...(options.display || {}) };
 
     this.width = 1000;
@@ -94,6 +99,7 @@ class TechRadar {
     this.drawBlips();
     this.buildQuadrantControls();
     this.bindControls();
+    this.updateOhNoButtonVisibility();
     this.bindTooltipPositioning();
     this.bindSelectionClearing();
 
@@ -160,7 +166,7 @@ class TechRadar {
 
     if (toggle) {
       const isDark = theme === "dark";
-      toggle.textContent = isDark ? "☀" : "🌙";
+      toggle.textContent = isDark ? "☀︎" : "☾";
       toggle.title = isDark ? "Switch to light mode" : "Switch to dark mode";
       toggle.setAttribute("aria-label", toggle.title);
       toggle.setAttribute("aria-pressed", String(isDark));
@@ -221,6 +227,7 @@ class TechRadar {
     document.body.dataset.showEntries = String(this.display.entries);
     document.body.dataset.showGuidance = String(this.display.guidance);
     document.body.dataset.showRadarSelector = String(this.display.radarSelector);
+    document.body.dataset.showOhno = String(this.display.ohno);
   }
 
   cssVar(name) {
@@ -522,6 +529,7 @@ class TechRadar {
   bindHighlightEvents(selection, getEntry, options = {}) {
     selection
       .on("mouseenter.highlight focus.highlight", (event, d) => {
+        if (this.lemmingActive) return;
         if (this.selectionActive) return;
 
         const entry = getEntry(d);
@@ -535,6 +543,7 @@ class TechRadar {
         }
       })
       .on("mouseleave.highlight blur.highlight", (event, d) => {
+        if (this.lemmingActive) return;
         if (this.selectionActive) return;
 
         const entry = getEntry(d);
@@ -634,6 +643,8 @@ class TechRadar {
   }
 
   selectEntry(entry, options = {}) {
+    if (this.lemmingActive) return;
+
     this.selectionActive = true;
     this.selectedEntry = entry;
 
@@ -720,6 +731,303 @@ class TechRadar {
     target.append("text").text(entry.id);
   }
 
+  drawLemming(target, index = 0) {
+    const sprite = target.append("g")
+      .attr("class", "lemming-sprite")
+      .attr("aria-hidden", "true")
+      .style("--walk-distance", `${26 + (index % 3) * 4}px`)
+      .style("--walk-lane", `${(index % 3) * 2 - 2}px`);
+
+    sprite.append("text")
+      .attr("class", "lemming-countdown-number")
+      .attr("y", -22);
+
+    const body = sprite.append("g")
+      .attr("class", "lemming-body");
+
+    body.append("rect")
+      .attr("class", "lemming-hair")
+      .attr("x", -10)
+      .attr("y", -24)
+      .attr("width", 20)
+      .attr("height", 11)
+      .attr("rx", 2);
+
+    body.append("rect")
+      .attr("class", "lemming-hair lemming-hair-top")
+      .attr("x", -7)
+      .attr("y", -31)
+      .attr("width", 14)
+      .attr("height", 8)
+      .attr("rx", 2);
+
+    body.append("rect")
+      .attr("class", "lemming-face")
+      .attr("x", -7)
+      .attr("y", -15)
+      .attr("width", 14)
+      .attr("height", 12)
+      .attr("rx", 2);
+
+    body.append("rect")
+      .attr("class", "lemming-tunic")
+      .attr("x", -9)
+      .attr("y", -4)
+      .attr("width", 18)
+      .attr("height", 19)
+      .attr("rx", 2);
+
+    body.append("rect")
+      .attr("class", "lemming-belt")
+      .attr("x", -9)
+      .attr("y", 6)
+      .attr("width", 18)
+      .attr("height", 3);
+
+    body.append("circle")
+      .attr("class", "lemming-eye")
+      .attr("cx", -3)
+      .attr("cy", -9)
+      .attr("r", 1.2);
+
+    body.append("circle")
+      .attr("class", "lemming-eye")
+      .attr("cx", 4)
+      .attr("cy", -9)
+      .attr("r", 1.2);
+
+    body.append("path")
+      .attr("class", "lemming-arm lemming-arm-walk")
+      .attr("d", "M -9,0 L -16,8 M 9,0 L 16,8");
+
+    body.append("path")
+      .attr("class", "lemming-arm lemming-arm-raised")
+      .attr("d", "M -8,0 L -15,-10 M 8,0 L 15,-10");
+
+    body.append("path")
+      .attr("class", "lemming-leg")
+      .attr("d", "M -5,15 L -12,24 M 5,15 L 12,24");
+
+    body.append("path")
+      .attr("class", "lemming-boot")
+      .attr("d", "M -12,24 L -4,24 M 12,24 L 4,24");
+
+    return sprite;
+  }
+
+  lemmingPosition(index) {
+    return {
+      x: 0,
+      y: 0
+    };
+  }
+
+  drawExplosion(target, position = { x: 0, y: 0 }) {
+    const blast = target.append("g")
+      .attr("class", "lemming-blast")
+      .attr("aria-hidden", "true")
+      .attr("transform", `translate(${position.x}, ${position.y})`);
+
+    blast.append("path")
+      .attr("class", "lemming-hole")
+      .attr("d", "M -12,-4 L -7,-11 L 2,-9 L 11,-5 L 13,4 L 5,10 L -4,12 L -13,6 Z");
+
+    const explosion = blast.append("g")
+      .attr("class", "lemming-explosion");
+
+    explosion.append("circle")
+      .attr("class", "lemming-boom-core")
+      .attr("r", 8);
+
+    for (let index = 0; index < 12; index++) {
+      const angle = (Math.PI * 2 * index) / 12;
+      const inner = 9;
+      const outer = index % 2 === 0 ? 42 : 31;
+
+      explosion.append("line")
+        .attr("class", "lemming-boom-ray")
+        .attr("x1", Math.cos(angle) * inner)
+        .attr("y1", Math.sin(angle) * inner)
+        .attr("x2", Math.cos(angle) * outer)
+        .attr("y2", Math.sin(angle) * outer);
+    }
+
+    for (let index = 0; index < 8; index++) {
+      const angle = (Math.PI * 2 * index) / 8 + 0.25;
+
+      explosion.append("circle")
+        .attr("class", "lemming-smoke")
+        .attr("cx", Math.cos(angle) * 22)
+        .attr("cy", Math.sin(angle) * 18)
+        .attr("r", 7);
+    }
+
+    return explosion;
+  }
+
+  drawLemmingCountdown(value, entries) {
+    this.updateLemmingButtonCountdown(value);
+
+    entries.forEach(entry => {
+      const blip = this.root.select(`#blip-${entry.id}`);
+
+      if (blip.empty()) return;
+
+      blip.select(".lemming-sprite .lemming-countdown-number")
+        .text(value);
+    });
+  }
+
+  updateLemmingButtonCountdown(value) {
+    const button = this.element("ohNoButtonId");
+
+    if (!button) return;
+
+    const icon = button.querySelector("[aria-hidden='true']");
+
+    if (icon) {
+      icon.textContent = value ? String(value) : "☠︎";
+    }
+  }
+
+  queueLemmingStep(callback, delay) {
+    const timer = window.setTimeout(() => {
+      this.lemmingTimers = this.lemmingTimers.filter(item => item !== timer);
+      callback();
+    }, delay);
+
+    this.lemmingTimers.push(timer);
+  }
+
+  clearLemmingEffect() {
+    this.lemmingTimers.forEach(timer => window.clearTimeout(timer));
+    this.lemmingTimers = [];
+    this.lemmingActive = false;
+    this.updateLemmingButtonCountdown("");
+
+    if (document.body) {
+      document.body.dataset.lemmingActive = "false";
+    }
+
+    this.root?.selectAll(".lemming-sprite,.lemming-blast").remove();
+    this.root?.classed("lemming-active", false);
+    this.root?.selectAll(".blip")
+      .classed("lemming-target", false)
+      .classed("lemming-has-exploded", false)
+      .selectAll("circle,path,text")
+      .classed("lemming-marker-hidden", false);
+
+    const button = this.element("ohNoButtonId");
+
+    if (button) {
+      button.disabled = !this.outerRingEntries().length;
+      button.removeAttribute("aria-busy");
+    }
+  }
+
+  outerRingEntries() {
+    const outerRing = this.config.rings.length - 1;
+
+    return this.entries.filter(entry => entry.ring === outerRing);
+  }
+
+  updateOhNoButtonVisibility() {
+    const button = this.element("ohNoButtonId");
+
+    if (!button) return;
+
+    const hasOuterRingEntries = this.display.ohno && this.outerRingEntries().length > 0;
+    const controls = button.closest(".ohno-controls");
+
+    button.hidden = !hasOuterRingEntries;
+    button.disabled = !hasOuterRingEntries;
+
+    if (controls) {
+      controls.hidden = !hasOuterRingEntries;
+    }
+  }
+
+  unleashLemming() {
+    if (!this.root) return;
+
+    const entries = this.outerRingEntries();
+
+    if (!entries.length) return;
+
+    const button = this.element("ohNoButtonId");
+
+    this.clearLemmingEffect();
+    this.clearSelection();
+    this.hideTooltip();
+    this.lemmingActive = true;
+
+    if (document.body) {
+      document.body.dataset.lemmingActive = "true";
+    }
+
+    this.root.classed("lemming-active", true);
+
+    this.root.selectAll(".blip")
+      .classed("highlight", entry => entries.some(target => target.id === entry.id))
+      .classed("dimmed", entry => !entries.some(target => target.id === entry.id));
+
+    d3.selectAll(".legend-item")
+      .classed("highlight", function () {
+        return entries.some(entry => this.id === `legend-item-${entry.id}`);
+      })
+      .classed("dimmed", function () {
+        return !entries.some(entry => this.id === `legend-item-${entry.id}`);
+      });
+
+    this.scrollLegendToEntry(entries[0]);
+
+    if (button) {
+      button.disabled = true;
+      button.setAttribute("aria-busy", "true");
+    }
+
+    entries.forEach((entry, index) => {
+      const blip = this.root.select(`#blip-${entry.id}`);
+
+      if (blip.empty()) return;
+
+      blip.classed("lemming-target", true)
+        .selectAll("circle,path,text")
+        .classed("lemming-marker-hidden", true);
+
+      this.drawLemming(blip, index);
+    });
+
+    [5, 4, 3, 2, 1].forEach((value, index) => {
+      this.queueLemmingStep(() => this.drawLemmingCountdown(value, entries), index * 850);
+    });
+
+    this.queueLemmingStep(() => {
+      this.root.selectAll(".lemming-sprite")
+        .classed("lemming-wobble", true)
+        .select(".lemming-countdown-number")
+        .text("");
+      this.updateLemmingButtonCountdown("");
+    }, 4250);
+
+    this.queueLemmingStep(() => {
+      entries.forEach((entry, index) => {
+        const blip = this.root.select(`#blip-${entry.id}`);
+
+        if (blip.empty()) return;
+
+        blip.select(".lemming-sprite").remove();
+        blip.classed("lemming-has-exploded", true);
+        this.drawExplosion(blip, this.lemmingPosition(index));
+      });
+    }, 5400);
+
+    this.queueLemmingStep(() => {
+      this.clearLemmingEffect();
+      this.clearSelection();
+    }, 6800);
+  }
+
   drawBlips() {
     const blips = this.root.selectAll(".blip")
       .data(this.entries, d => d.id)
@@ -800,6 +1108,12 @@ class TechRadar {
           this.bindHighlightEvents(row, () => item);
 
           row.on("click", event => {
+            if (this.lemmingActive) {
+              event.preventDefault();
+              event.stopPropagation();
+              return;
+            }
+
             if (event.target.closest("a")) return;
 
             event.stopPropagation();
@@ -1010,6 +1324,8 @@ class TechRadar {
   }
 
   resetZoom() {
+    this.clearLemmingEffect();
+
     this.svg.transition()
       .duration(500)
       .call(this.zoom.transform, d3.zoomIdentity);
@@ -1041,6 +1357,10 @@ class TechRadar {
       const nextTheme = document.body.dataset.theme === "dark" ? "light" : "dark";
       this.applyTheme(nextTheme, true);
       this.refreshThemeColours();
+    }, { signal: this.abortController.signal });
+
+    this.element("ohNoButtonId")?.addEventListener("click", () => {
+      this.unleashLemming();
     }, { signal: this.abortController.signal });
 
     const search = this.element("searchId");
@@ -1130,6 +1450,7 @@ class TechRadar {
   destroy() {
     this.abortController.abort();
     this.simulation?.stop();
+    this.clearLemmingEffect();
     this.svg?.interrupt();
     this.svg?.on(".zoom", null);
     this.hideTooltip();

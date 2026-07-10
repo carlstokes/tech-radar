@@ -277,7 +277,7 @@
       "label": "Azure API Management",
       "reason": "Not the default choice for internal APIs. Introduce only where gateway capabilities provide clear business value.",
       "link": "https://learn.microsoft.com/azure/api-management/",
-      "moved": 2
+      "moved": -1
     }
   ]
 }

@@ -81,11 +81,15 @@ input {
 }
 
 button {
+  appearance: none;
+  -webkit-appearance: none;
   border: 1px solid var(--border);
   background: var(--surface);
+  color: var(--text);
   border-radius: 8px;
   padding: 8px 10px;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button:hover {
@@ -214,8 +218,10 @@ h1 {
 }
 
 .reset-controls,
-.appearance-controls {
+.appearance-controls,
+.ohno-controls {
   align-items: center;
+  height: 38px;
 }
 
 .icon-button {
@@ -286,6 +292,20 @@ h1 {
 
 .reset-button {
   min-width: 42px;
+}
+
+.ohno-button {
+  font-family: "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols", sans-serif;
+  min-width: 42px;
+}
+
+.ohno-button[aria-busy="true"] {
+  color: #d94336;
+}
+
+.theme-toggle-button {
+  font-family: "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols", sans-serif;
+  line-height: 1;
 }
 
 /* Main layout */
@@ -513,6 +533,234 @@ svg:active {
   opacity: 0.28;
 }
 
+/* Oh No lemming animation */
+
+#radar-root.lemming-active .blip,
+body[data-lemming-active="true"] .legend-item,
+body[data-lemming-active="true"] .legend-item * {
+  pointer-events: none;
+}
+
+.blip.lemming-target {
+  opacity: 1;
+}
+
+.blip.lemming-target > circle,
+.blip.lemming-target > path {
+  stroke: var(--highlight-stroke);
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 7px rgba(217, 67, 54, 0.55));
+}
+
+.lemming-marker-hidden {
+  opacity: 0;
+}
+
+.lemming-sprite {
+  animation: lemming-walk 4.25s ease-in-out forwards;
+  pointer-events: none;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.lemming-body {
+  animation: lemming-step 360ms steps(2, end) infinite;
+  transform: scale(0.58);
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.lemming-hair {
+  fill: #68d641;
+  stroke: #1c6f22;
+  stroke-width: 1.3px;
+}
+
+.lemming-hair-top {
+  fill: #79ed4f;
+}
+
+.lemming-face {
+  fill: #ffc497;
+  stroke: #3a261c;
+  stroke-width: 1.2px;
+}
+
+.lemming-tunic {
+  fill: #1f6ed4;
+  stroke: #0c2f73;
+  stroke-width: 1.2px;
+}
+
+.lemming-belt {
+  fill: #0f2453;
+}
+
+.lemming-eye {
+  fill: #1b1b1b;
+}
+
+.lemming-arm,
+.lemming-leg {
+  fill: none;
+  stroke: #ffc497;
+  stroke-width: 3px;
+  stroke-linecap: round;
+  animation: lemming-limbs 260ms steps(2, end) infinite;
+}
+
+.lemming-boot {
+  fill: none;
+  stroke: #f7f2df;
+  stroke-width: 4px;
+  stroke-linecap: square;
+  animation: lemming-limbs 260ms steps(2, end) infinite reverse;
+}
+
+.lemming-arm-raised {
+  display: none;
+}
+
+.lemming-wobble .lemming-body {
+  animation: none;
+}
+
+.lemming-wobble .lemming-arm-walk {
+  display: none;
+}
+
+.lemming-wobble .lemming-arm-raised {
+  display: block;
+}
+
+.lemming-hole {
+  fill: #111111;
+  stroke: #4a4a4a;
+  stroke-width: 2px;
+  opacity: 0.82;
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.45));
+}
+
+.lemming-explosion {
+  animation: lemming-boom 1050ms steps(5, end) forwards;
+  pointer-events: none;
+}
+
+.lemming-boom-core {
+  fill: #fff06a;
+  stroke: #d94336;
+  stroke-width: 5px;
+}
+
+.lemming-boom-ray {
+  stroke: #ff6d2d;
+  stroke-width: 7px;
+  stroke-linecap: square;
+}
+
+.lemming-smoke {
+  fill: #d7dbe2;
+  stroke: #777f8d;
+  stroke-width: 1px;
+  opacity: 0.9;
+}
+
+.lemming-countdown-number {
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-family: "Courier New", monospace;
+  font-size: 18px;
+  font-weight: 900;
+  paint-order: stroke;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.blip .lemming-countdown-number {
+  fill: #111111;
+  stroke: #ffffff;
+}
+
+:root[data-theme="dark"] .lemming-countdown-number,
+body[data-theme="dark"] .lemming-countdown-number {
+  fill: #ffffff;
+  stroke: #111111;
+}
+
+@keyframes lemming-walk {
+  0% {
+    transform: translate(0, var(--walk-lane));
+  }
+
+  50% {
+    transform: translate(var(--walk-distance), var(--walk-lane));
+  }
+
+  100% {
+    transform: translate(0, var(--walk-lane));
+  }
+}
+
+@keyframes lemming-step {
+  0% {
+    transform: translateY(0) scale(0.58);
+  }
+
+  100% {
+    transform: translateY(-1px) scale(0.58);
+  }
+}
+
+@keyframes lemming-limbs {
+  0% {
+    transform: rotate(-8deg);
+  }
+
+  100% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes lemming-boom {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+
+  20% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+
+  55% {
+    transform: scale(1.35);
+    opacity: 0.92;
+  }
+
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+.lemming-wobble {
+  animation: lemming-wobble 360ms steps(4, end) infinite !important;
+}
+
+@keyframes lemming-wobble {
+  0% {
+    transform: translate(0, var(--walk-lane)) rotate(-8deg);
+  }
+
+  50% {
+    transform: translate(0, var(--walk-lane)) rotate(8deg);
+  }
+
+  100% {
+    transform: translate(0, var(--walk-lane)) rotate(-8deg);
+  }
+}
+
 .ring-label {
   font-size: 42px;
   font-weight: bold;
@@ -589,6 +837,10 @@ body[data-show-guidance="false"] #guidance-panel {
   display: none !important;
 }
 body[data-show-radar-selector="false"] .radar-selector-label {
+  display: none !important;
+}
+
+body[data-show-ohno="false"] .ohno-controls {
   display: none !important;
 }
 
@@ -698,7 +950,8 @@ body[data-show-title="false"][data-show-controls="false"] .app-header {
   }
 
   .reset-controls,
-  .appearance-controls {
+  .appearance-controls,
+  .ohno-controls {
     width: auto;
     align-self: flex-end;
   }
