@@ -57,6 +57,22 @@
     },
     {
       "quadrant": 0,
+      "ring": 2,
+      "label": "Residuality Theory",
+      "reason": "Explore Residuality Theory for designing resilient systems that maintain useful behaviour under stress, disruption and partial failure by reasoning about the residual structures that remain.",
+      "link": "https://youtu.be/_MPUoiG6w_U?si=buXCqvUe76vkCr4A",
+      "moved": 2
+    },
+    {
+      "quadrant": 0,
+      "ring": 2,
+      "label": "Risk Storming",
+      "reason": "Use collaborative visual techniques to identify and prioritise architectural risks, helping teams focus design discussions and mitigation efforts on the areas of greatest uncertainty or concern.",
+      "link": "https://riskstorming.com/",
+      "moved": 2
+    },
+    {
+      "quadrant": 0,
       "ring": 0,
       "label": "Architecture Decision Records",
       "reason": "Lightweight way to capture important engineering decisions.",
@@ -133,6 +149,14 @@
       "label": "Testcontainers",
       "reason": "Run realistic integration tests using disposable containerised dependencies.",
       "link": "https://testcontainers.com/",
+      "moved": 2
+    },
+    {
+      "quadrant": 1,
+      "ring": 1,
+      "label": "IcePanel",
+      "reason": "Use collaborative C4-based architecture modelling to visualise, explore and communicate software systems, improving shared understanding of architecture across engineering teams.",
+      "link": "https://icepanel.io/",
       "moved": 2
     },
     {
