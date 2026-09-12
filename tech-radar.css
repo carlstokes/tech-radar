@@ -439,6 +439,12 @@ main {
   font-weight: bold;
 }
 
+.movement-blip {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
 /* Legend */
 
 .legend-section {

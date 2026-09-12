@@ -635,17 +635,20 @@ class TechRadar {
   }
 
   drawMarker(target, entry) {
-    const colour = `var(--ring-${entry.ring})`;
+    this.drawMarkerShape(target, entry.moved, `var(--ring-${entry.ring})`);
+    target.append("text").text(entry.id);
+  }
 
-    if (entry.moved === 1) {
+  drawMarkerShape(target, moved, colour) {
+    if (moved === 1) {
       target.append("path")
         .attr("d", "M -11,7 L 11,7 L 0,-14 Z")
         .attr("fill", colour);
-    } else if (entry.moved === -1) {
+    } else if (moved === -1) {
       target.append("path")
         .attr("d", "M -11,-7 L 11,-7 L 0,14 Z")
         .attr("fill", colour);
-    } else if (entry.moved === 2) {
+    } else if (moved === 2) {
       target.append("path")
         .attr("d", d3.symbol().type(d3.symbolStar).size(220)())
         .attr("fill", colour);
@@ -654,8 +657,6 @@ class TechRadar {
         .attr("r", 10)
         .attr("fill", colour);
     }
-
-    target.append("text").text(entry.id);
   }
 
   drawBlips() {
@@ -778,7 +779,7 @@ class TechRadar {
     this.guidance.html("");
     const grid = this.guidance.append("div").attr("class", "guidance-grid");
 
-    const addTable = (title, headings, rows) => {
+    const addTable = (title, headings, rows, renderName = (cell, name) => cell.text(name)) => {
       const section = grid.append("section");
       section.append("h2").text(title);
       const table = section.append("table");
@@ -787,7 +788,7 @@ class TechRadar {
       const body = table.append("tbody");
       rows.forEach(([name, description, className = "guidance-name"]) => {
         const row = body.append("tr");
-        row.append("td").attr("class", className).text(name);
+        renderName(row.append("td").attr("class", className), name);
         row.append("td").text(description);
       });
     };
@@ -796,12 +797,18 @@ class TechRadar {
       [ring.name, ring.description, `guidance-name ring-name-${index}`]));
     addTable("Quadrants", ["Quadrant", "Purpose"], this.config.quadrants.map(quadrant =>
       [quadrant.name, quadrant.purpose]));
-    addTable("Movement", ["Marker", "Meaning"], [
-      ["●", "No movement or movement not specified."],
-      ["▲", "Moved in, moved up, or increased confidence since the previous radar."],
-      ["▼", "Moved out, moved down, or reduced confidence since the previous radar."],
-      ["★", "New or notable item added to this radar."]
-    ]);
+    addTable("Movement", ["Blip", "Meaning"], [
+      [0, "No movement or movement not specified."],
+      [1, "Moved in, moved up, or increased confidence since the previous radar."],
+      [-1, "Moved out, moved down, or reduced confidence since the previous radar."],
+      [2, "New or notable item added to this radar."]
+    ], (cell, moved) => {
+      const marker = cell.append("svg")
+        .attr("class", "movement-blip")
+        .attr("viewBox", "-16 -16 32 32")
+        .attr("aria-hidden", "true");
+      this.drawMarkerShape(marker, moved, "var(--muted)");
+    });
   }
 
   configureZoom() {
