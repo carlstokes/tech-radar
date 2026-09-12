@@ -180,8 +180,7 @@ class LemmingEffect {
     this.radar.root?.classed("lemming-active", false);
     this.radar.root?.selectAll(".blip")
       .classed("lemming-target", false)
-      .selectAll("circle,path,text")
-      .classed("lemming-marker-hidden", false);
+      .classed("lemming-burst", false);
 
     const button = this.radar.element("ohNoButtonId");
 
@@ -251,9 +250,7 @@ class LemmingEffect {
 
       if (blip.empty()) return;
 
-      blip.classed("lemming-target", true)
-        .selectAll("circle,path,text")
-        .classed("lemming-marker-hidden", true);
+      blip.classed("lemming-target", true);
 
       this.drawLemming(blip, index);
     });
@@ -277,6 +274,7 @@ class LemmingEffect {
         if (blip.empty()) return;
 
         blip.select(".lemming-sprite").remove();
+        blip.classed("lemming-burst", true);
         this.drawExplosion(blip);
       });
     }, 5400);

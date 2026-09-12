@@ -517,7 +517,7 @@ main {
 .blip.highlight > circle,
 .blip.highlight > path {
   stroke: var(--highlight-stroke);
-  stroke-width: 3px;
+  stroke-width: 2px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
 }
 

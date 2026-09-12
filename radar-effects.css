@@ -13,12 +13,8 @@ body[data-lemming-active="true"] .legend-item * {
 .blip.lemming-target > circle,
 .blip.lemming-target > path {
   stroke: var(--highlight-stroke);
-  stroke-width: 3px;
+  stroke-width: 2px;
   filter: drop-shadow(0 0 7px rgba(217, 67, 54, 0.55));
-}
-
-.lemming-marker-hidden {
-  opacity: 0;
 }
 
 .lemming-sprite {
@@ -223,4 +219,15 @@ body[data-lemming-active="true"] .legend-item * {
   100% {
     transform: translate(0, var(--walk-lane)) rotate(-8deg);
   }
+}
+
+.blip.lemming-burst > circle,
+.blip.lemming-burst > path,
+.blip.lemming-burst > text {
+  animation: lemming-marker-burst 400ms ease-out forwards;
+}
+
+@keyframes lemming-marker-burst {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(2.5); opacity: 0; }
 }
